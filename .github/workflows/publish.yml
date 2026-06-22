@@ -1,0 +1,80 @@
+name: Publish NuGet packages
+
+on:
+  # Manual only - never runs on commit/merge.
+  workflow_dispatch:
+    inputs:
+      publish_to_nuget:
+        description: "Also publish this build to nuget.org (public release)"
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    permissions:
+      contents: read
+      id-token: write          # required for nuget.org OIDC trusted publishing
+      packages: write          # required to publish to GitHub Packages
+    env:
+      DOTNET_NOLOGO: true
+
+    runs-on: windows-latest
+    steps:
+    - name: Clone source
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          10.0.x
+
+    - name: "Install .NET workloads"
+      run: |
+        dotnet workload install android
+        dotnet workload install ios
+        dotnet workload install maccatalyst
+        dotnet workload install maui
+        dotnet workload list
+
+    - name: "Restore and build solution"
+      run: dotnet build Sources/Microcharts.Maui.sln --configuration Release -p:VersionPrelease=.${{ github.run_number }}
+
+    - name: "Pack Microcharts Core"
+      run: dotnet pack Sources/Microcharts/Microcharts.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+
+    - name: "Pack Microcharts Droid"
+      run: dotnet pack Sources/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+
+    - name: "Pack Microcharts iOS"
+      run: dotnet pack Sources/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+
+    - name: "Pack Microcharts MAUI"
+      run: dotnet pack Sources/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+
+    - name: "Pack Microcharts Meta-package"
+      run: dotnet pack Sources/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release -p:VersionPrelease=.${{ github.run_number }}
+
+    # Always publish the build to GitHub Packages (prerelease/CI feed).
+    - name: Publish packages to GitHub Packages
+      run: |
+        dotnet nuget add source --username microcharts-dotnet --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/microcharts-dotnet/index.json"
+        dotnet nuget push "artifacts/*.nupkg" --skip-duplicate --no-symbols --source "github"
+
+    # Publish to nuget.org only when explicitly requested via the workflow input.
+    - name: NuGet login (OIDC -> short-lived API key)
+      if: ${{ inputs.publish_to_nuget }}
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: follesoe          # nuget.org username (profile name), not email
+
+    - name: Publish packages to nuget.org
+      if: ${{ inputs.publish_to_nuget }}
+      run: >
+        dotnet nuget push "artifacts/*.nupkg"
+        --skip-duplicate --no-symbols
+        --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+        --source https://api.nuget.org/v3/index.json

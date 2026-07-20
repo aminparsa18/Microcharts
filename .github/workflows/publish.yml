@@ -61,7 +61,7 @@ jobs:
     - name: Publish packages to GitHub Packages
       run: |
         dotnet nuget add source --username microcharts-dotnet --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/microcharts-dotnet/index.json"
-        dotnet nuget push "artifacts/*.nupkg" --skip-duplicate --no-symbols --source "github"
+        Get-ChildItem artifacts/*.nupkg | ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --source github }
 
     # Publish to nuget.org only when explicitly requested via the workflow input.
     - name: NuGet login (OIDC -> short-lived API key)
@@ -73,8 +73,5 @@ jobs:
 
     - name: Publish packages to nuget.org
       if: ${{ inputs.publish_to_nuget }}
-      run: >
-        dotnet nuget push "artifacts/*.nupkg"
-        --skip-duplicate --no-symbols
-        --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
-        --source https://api.nuget.org/v3/index.json
+      run: |
+        Get-ChildItem artifacts/*.nupkg | ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json }

@@ -16,7 +16,7 @@ This project is just simple drawing on top of the awesome [SkiaSharp](https://gi
 
 Contributions are welcome! If you find a bug please report it and if you want a feature please report it.
 
-If you want to contribute code please file an issue and create a branch off of the current dev branch and file a pull request.
+If you want to contribute code please file an issue and create a branch off of the `main` branch and file a pull request.
 
 More info on how you can help can be found [here](https://github.com/microcharts-dotnet/Microcharts/wiki/Contributing).
 
@@ -42,14 +42,15 @@ Don't forget to call `UseMicrocharts()` on `MauiAppBuilder` in the `MauiProgram`
 
 ## Tutorials
 
-* [Video: Charts for Xamarin Forms](https://www.youtube.com/watch?v=tmymWdmf1y4) by [@HoussemDellai](https://github.com/HoussemDellai)
+* [Video: Charts for Xamarin.Forms](https://www.youtube.com/watch?v=tmymWdmf1y4) by [@HoussemDellai](https://github.com/HoussemDellai) *(legacy Xamarin.Forms; the charting concepts still apply)*
 
 ## Compatibility
 
-Built in views are provided for:
+Built-in views are provided for the following, all targeting .NET 10 and rendered with SkiaSharp:
 
-* .NET 10 (on all platforms)
-* MAUI (Windows, Android, iOS, and macOS Catalyst)
+* .NET MAUI (Windows, Android, iOS, and Mac Catalyst)
+* .NET for iOS — native `Microcharts.iOS` view
+* .NET for Android — native `Microcharts.Droid` view
 
 ## License
 

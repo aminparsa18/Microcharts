@@ -40,7 +40,7 @@ jobs:
         dotnet workload list
 
     - name: "Restore and build solution"
-      run: dotnet build Sources/Microcharts.Maui.sln --configuration Release -p:VersionPrelease=.${{ github.run_number }}
+      run: dotnet build Sources/Microcharts.slnx --configuration Release -p:VersionPrelease=.${{ github.run_number }}
 
     - name: "Pack Microcharts Core"
       run: dotnet pack Sources/Microcharts/Microcharts.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}

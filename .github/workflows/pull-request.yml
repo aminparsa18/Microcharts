@@ -40,7 +40,7 @@ jobs:
           xcode-version: latest-stable
 
       - name: "Build solution"
-        run: dotnet build Sources/Microcharts.Maui.sln --configuration Release
+        run: dotnet build Sources/Microcharts.slnx --configuration Release
 
       - name: "Pack Microcharts Core"
         run: dotnet pack Sources/Microcharts/Microcharts.csproj --configuration Release --no-build

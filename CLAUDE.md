@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build the full solution (preferred)
-dotnet build Sources/Microcharts.Maui.sln --configuration Release
+dotnet build Sources/Microcharts.slnx --configuration Release
 
 # Pack all NuGet packages (macOS/Linux)
 ./buildpackages-maui.sh

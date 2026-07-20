@@ -2,5 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <NuspecFile>Microcharts.Metapackage.nuspec</NuspecFile>
+    <!-- Feed $version$ in the nuspec (package version + Microcharts.* deps) from the
+         computed PackageVersion so the meta-package tracks the platform packages,
+         both for CI builds (2.0.0.<run>) and clean releases (2.0.0). -->
+    <NuspecProperties>version=$(PackageVersion)</NuspecProperties>
   </PropertyGroup>
 </Project>

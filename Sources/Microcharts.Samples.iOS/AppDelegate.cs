@@ -14,11 +14,15 @@ namespace Microcharts.Samples.iOS
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            // create a new window instance based on the screen size
+            // create a new window instance based on the screen size.
+            // This sample uses the classic UIApplicationDelegate lifecycle; UIWindow(CGRect) is
+            // obsoleted on iOS 26 in favour of the scene-based UIWindow(UIWindowScene) overload.
+#pragma warning disable CA1422
             Window = new UIWindow(UIScreen.MainScreen.Bounds)
             {
                 RootViewController = StoryboardHelpers.CreateViewController<MainViewController>("Main", "MainViewController")
             };
+#pragma warning restore CA1422
 
             // make the window visible
             Window.MakeKeyAndVisible();

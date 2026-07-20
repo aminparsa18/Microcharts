@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build the full solution (preferred)
-dotnet build Sources/Microcharts.Maui.sln --configuration Release
+dotnet build Sources/Microcharts.slnx --configuration Release
 
 # Pack all NuGet packages (macOS/Linux)
 ./buildpackages-maui.sh
@@ -70,10 +70,9 @@ Each platform project contains a single `ChartView` class that extends `SKCanvas
 
 ## Versioning and Packaging
 
-Version is managed centrally in `Sources/Directory.Build.props` (`VersionMain` property). All package output goes to the `/artifacts` directory. The CI-Maui workflow appends the GitHub run number as a prerelease suffix.
+Version is managed centrally in `Sources/Directory.Build.props` (`VersionMain` property). All package output goes to the `/artifacts` directory. The publish.yml workflow appends the GitHub run number as a prerelease suffix.
 
 ## CI/CD
 
-- **pull-request.yml** - Builds on `windows-latest` and `macos-26` (with Xcode 26.3 via `maxim-lobanov/setup-xcode@v1`)
-- **CI-Maui.yml** - Manual trigger; publishes packages to GitHub Packages (`microcharts-dotnet` org)
-- **CI-Windows.yml** - Manual trigger; publishes packages to nuget.org
+- **pull-request.yml** - Runs on pull requests (and manual dispatch); builds on `windows-latest` and `macos-26` (with Xcode `latest-stable` via `maxim-lobanov/setup-xcode@v1`)
+- **publish.yml** - Manual trigger (`workflow_dispatch`); always publishes packages to GitHub Packages (`microcharts-dotnet` org), and additionally to nuget.org when the `publish_to_nuget` input is set (OIDC trusted publishing)

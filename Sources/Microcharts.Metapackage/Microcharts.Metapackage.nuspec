@@ -13,6 +13,7 @@
     <copyright>© 2025 Microcharts Team</copyright>
     <tags>maui ios android chart skia</tags>
     <icon>assets/Icon.png</icon>
+    <repository type="git" url="https://github.com/microcharts-dotnet/Microcharts.git" />
     <dependencies>
       <group targetFramework="net10.0">
         <dependency id="Microcharts.Core" version="2.0.0" />
@@ -23,21 +24,27 @@
         <dependency id="Microcharts.Maui" version="2.0.0" />
         <dependency id="SkiaSharp" version="3.116.1" />
         <dependency id="SkiaSharp.Views" version="3.116.1" />
-        <dependency id="SkiaSharp.Views.Maui.Controls" Version="3.116.1" />
+        <dependency id="SkiaSharp.Views.Maui.Controls" version="3.116.1" />
       </group>
       <group targetFramework="net10.0-ios19.0">
         <dependency id="Microcharts.Core" version="2.0.0" />
         <dependency id="Microcharts.Maui" version="2.0.0" />
         <dependency id="SkiaSharp" version="3.116.1" />
         <dependency id="SkiaSharp.Views" version="3.116.1" />
-        <dependency id="SkiaSharp.Views.Maui.Controls" Version="3.116.1" />
+        <dependency id="SkiaSharp.Views.Maui.Controls" version="3.116.1" />
       </group>
       <group targetFramework="net10.0-maccatalyst19.0">
         <dependency id="Microcharts.Core" version="2.0.0" />
         <dependency id="Microcharts.Maui" version="2.0.0" />
         <dependency id="SkiaSharp" version="3.116.1" />
         <dependency id="SkiaSharp.Views" version="3.116.1" />
-        <dependency id="SkiaSharp.Views.Maui.Controls" Version="3.116.1" />
+        <dependency id="SkiaSharp.Views.Maui.Controls" version="3.116.1" />
+      </group>
+      <group targetFramework="net10.0-windows10.0.19041.0">
+        <dependency id="Microcharts.Core" version="2.0.0" />
+        <dependency id="Microcharts.Maui" version="2.0.0" />
+        <dependency id="SkiaSharp" version="3.116.1" />
+        <dependency id="SkiaSharp.Views.Maui.Controls" version="3.116.1" />
       </group>
     </dependencies>
   </metadata>
@@ -47,5 +54,6 @@
     <file src="_._" target="lib/net10.0-android36.0" />
     <file src="_._" target="lib/net10.0-ios19.0" />
     <file src="_._" target="lib/net10.0-maccatalyst19.0" />
+    <file src="_._" target="lib/net10.0-windows10.0.19041.0" />
   </files>
 </package>

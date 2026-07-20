@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.github/workflows/publish.yml" />
+    <File Path="../.github/workflows/pull-request.yml" />
+    <File Path="../README.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Nuget.config" />
+  </Folder>
+  <Project Path="Microcharts.Droid/Microcharts.Droid.csproj" />
+  <Project Path="Microcharts.iOS/Microcharts.iOS.csproj" />
+  <Project Path="Microcharts.Maui/Microcharts.Maui.csproj" />
+  <Project Path="Microcharts.Metapackage/Microcharts.Metapackage.csproj" />
+  <Project Path="Microcharts.Samples.Android/Microcharts.Samples.Android.csproj" />
+  <Project Path="Microcharts.Samples.iOS/Microcharts.Samples.iOS.csproj">
+    <Platform Project="iPhoneSimulator" />
+  </Project>
+  <Project Path="Microcharts.Samples.Maui/Microcharts.Samples.Maui.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="Microcharts.Samples/Microcharts.Samples.csproj" />
+  <Project Path="Microcharts/Microcharts.csproj" />
+</Solution>

@@ -297,11 +297,14 @@ namespace Microcharts
         {
             DrawableChartArea = new SKRect(0, 0, width, height);
 
-            // Clear just the drawing area to avoid messing up rest of the canvas in case it's shared
+            // Clear just the drawing area to avoid messing up rest of the canvas in case it's shared.
+            // Use Src blend so a transparent BackgroundColor actually replaces (clears) the previous
+            // frame rather than blending over it, which otherwise leaves stale content behind.
             using (var paint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
-                Color = BackgroundColor
+                Color = BackgroundColor,
+                BlendMode = SKBlendMode.Src
             })
             {
                 canvas.DrawRect(DrawableChartArea, paint);

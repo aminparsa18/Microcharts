@@ -34,7 +34,7 @@ namespace Microcharts
                 Style = SKPaintStyle.StrokeAndFill,
             };
 
-            YAxisTextFont = new SKFont();
+            YAxisTextFont = new SKFont(SKTypeface.Default);
 
             YAxisLinesPaint = new SKPaint
             {
@@ -323,34 +323,38 @@ namespace Microcharts
         /// Measures the value labels.
         /// </summary>
         /// <returns>The value labels.</returns>
-        protected SKRect[] MeasureLabels(string[] labels, SKPaint paint = null)
+        protected SKRect[] MeasureLabels(string[] labels)
+        {
+            using var font = new SKFont(SKTypeface.Default, LabelTextSize);
+            return MeasureHelper.MeasureTexts(labels, font);
+        }
+
+        /// <summary>
+        /// Measures the value labels with the text size of the given paint.
+        /// </summary>
+        /// <returns>The value labels.</returns>
+        protected SKRect[] MeasureLabels(string[] labels, SKPaint paint)
         {
             if (paint == null)
             {
-                paint = new SKPaint
-                {
-                    TextSize = LabelTextSize
-                };
+                return MeasureLabels(labels);
             }
 
-            return labels.Select(text =>
-            {
-                if (string.IsNullOrEmpty(text))
-                {
-                    return SKRect.Empty;
-                }
-
-                var bounds = new SKRect();
-                paint.MeasureText(text, ref bounds);
-                return bounds;
-            }).ToArray();
+            using var font = new SKFont(SKTypeface.Default, paint.TextSize);
+            return MeasureHelper.MeasureTexts(labels, font);
         }
 
         /// <summary>
         /// Measures the value label.
         /// </summary>
         /// <returns>The value label.</returns>
-        protected SKRect MeasureLabel(string label, SKPaint paint = null) => MeasureLabels(new[] { label }, paint).First();
+        protected SKRect MeasureLabel(string label) => MeasureLabels(new[] { label }).First();
+
+        /// <summary>
+        /// Measures the value label with the text size of the given paint.
+        /// </summary>
+        /// <returns>The value label.</returns>
+        protected SKRect MeasureLabel(string label, SKPaint paint) => MeasureLabels(new[] { label }, paint).First();
         #endregion
     }
 }

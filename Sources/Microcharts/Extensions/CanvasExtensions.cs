@@ -22,9 +22,7 @@ namespace Microcharts
 
                 if (hasLabel)
                 {
-                    using var font = new SKFont();
-                    font.Size = textSize;
-                    font.Typeface = typeface;
+                    using var font = new SKFont(typeface ?? SKTypeface.Default, textSize);
 
                     using var paint = new SKPaint();
                     paint.IsAntialias = true;
@@ -44,9 +42,7 @@ namespace Microcharts
 
                 if (hasValueLabel)
                 {
-                    using var font = new SKFont();
-                    font.Size = textSize;
-                    font.Typeface = typeface;
+                    using var font = new SKFont(typeface ?? SKTypeface.Default, textSize);
                     font.Embolden = true;
 
                     using var paint = new SKPaint();

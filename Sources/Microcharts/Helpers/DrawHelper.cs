@@ -21,12 +21,9 @@ namespace Microcharts
         {
             using (new SKAutoCanvasRestore(canvas))
             {
-                using (var font = new  SKFont())
+                using (var font = new SKFont(typeface ?? SKTypeface.Default, textSize))
                 using (var paint = new SKPaint())
                 {
-                    font.Size = textSize;
-                    font.Typeface = typeface;
-
                     paint.IsAntialias = true;
                     paint.Color = color;
                     paint.IsStroke = false;
@@ -89,7 +86,7 @@ namespace Microcharts
                         canvas.Translate(point.X - (bounds.Width / 2), y);
                     }
 
-                    canvas.DrawText(text, 0, 0, font, paint);
+                    canvas.DrawText(text, 0, 0, SKTextAlign.Left, font, paint);
                 }
             }
         }

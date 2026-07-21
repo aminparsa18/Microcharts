@@ -12,8 +12,7 @@ namespace Microcharts
         /// <returns>The texts bounds.</returns>
         internal static SKRect[] MeasureTexts(string[] texts, float textSize)
         {
-            using var font = new SKFont();
-            font.Size = textSize;
+            using var font = new SKFont(SKTypeface.Default, textSize);
             return MeasureTexts(texts, font);
         }
 

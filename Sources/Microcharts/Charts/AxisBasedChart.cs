@@ -30,7 +30,7 @@ namespace Microcharts
                 Style = SKPaintStyle.StrokeAndFill,
             };
 
-            YAxisTextFont = new SKFont();
+            YAxisTextFont = new SKFont(SKTypeface.Default);
 
             YAxisLinesPaint = new SKPaint
             {
@@ -366,12 +366,9 @@ namespace Microcharts
             }
 
             currentWidthUsed += Margin + SerieLabelTextSize + Margin;
-            using (var font = new SKFont())
+            using (var font = new SKFont(Typeface ?? SKTypeface.Default, SerieLabelTextSize))
             using (var paint = new SKPaint())
             {
-                font.Size = SerieLabelTextSize;
-                font.Typeface = Typeface;
-
                 paint.IsAntialias = true;
                 paint.Color = lblColor;
                 paint.IsStroke = false;
@@ -379,7 +376,7 @@ namespace Microcharts
                 font.MeasureText(serie.Name, out var bounds);
                 //Vertical center align the text to the legend color box
                 float textYPosition = rect.Bottom - ((rect.Bottom - rect.Top) / 2) + (bounds.Height / 2);
-                canvas.DrawText(serie.Name, currentWidthUsed, textYPosition, font, paint);
+                canvas.DrawText(serie.Name, currentWidthUsed, textYPosition, SKTextAlign.Left, font, paint);
                 currentWidthUsed += bounds.Width;
             }
 
@@ -432,8 +429,7 @@ namespace Microcharts
         private Dictionary<ChartEntry, SKRect> MeasureValueLabels()
         {
             var dict = new Dictionary<ChartEntry, SKRect>();
-            using var font = new SKFont();
-            font.Size = valueLabelTextSize;
+            using var font = new SKFont(SKTypeface.Default, valueLabelTextSize);
 
             foreach (var e in entries)
             {

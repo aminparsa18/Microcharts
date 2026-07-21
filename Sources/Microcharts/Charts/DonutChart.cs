@@ -118,20 +118,20 @@ namespace Microcharts
             while (i < Entries.Count() && (current < sumValue / 2))
             {
                 var entry = Entries.ElementAt(i);
+                i++;
                 if (!entry.Value.HasValue) continue;
 
                 rightValues.Add(entry);
                 current += Math.Abs(entry.Value.Value);
-                i++;
             }
 
             while (i < Entries.Count())
             {
                 var entry = Entries.ElementAt(i);
+                i++;
                 if (!entry.Value.HasValue) continue;
 
                 leftValues.Add(entry);
-                i++;
             }
 
             leftValues.Reverse();

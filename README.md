@@ -28,13 +28,13 @@ More info on how you can help can be found [here](https://github.com/microcharts
 
 ## Install
 
-Available on NuGet
+Available on NuGet:
 
-* [Microcharts](https://www.nuget.org/packages/Microcharts/)
-* [Microcharts.Core](https://www.nuget.org/packages/Microcharts.Core/)
-* [Microcharts.Maui](https://www.nuget.org/packages/Microcharts.Maui/)
-* [Microcharts.iOS](https://www.nuget.org/packages/Microcharts.iOS/)
-* [Microcharts.Android](https://www.nuget.org/packages/Microcharts.Droid/)
+* [Microcharts](https://www.nuget.org/packages/Microcharts/) — meta-package (start here)
+* [Microcharts.Core](https://www.nuget.org/packages/Microcharts.Core/) — cross-platform rendering
+* [Microcharts.Maui](https://www.nuget.org/packages/Microcharts.Maui/) — MAUI `ChartView`
+
+The native iOS and Android views — `Microcharts.iOS` and `Microcharts.Droid` — are published to the [GitHub Packages feed](https://github.com/orgs/microcharts-dotnet/packages) rather than nuget.org. Installing them requires adding the org feed as a NuGet source and authenticating with a GitHub token that has `read:packages`.
 
 **.NET MAUI**
 

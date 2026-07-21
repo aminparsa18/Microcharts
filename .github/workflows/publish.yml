@@ -71,7 +71,15 @@ jobs:
       with:
         user: follesoe          # nuget.org username (profile name), not email
 
+    # Only push the package IDs the org owns on nuget.org. Microcharts.iOS and
+    # Microcharts.Droid are excluded because we don't own those IDs there yet; both are
+    # still published to the GitHub Packages feed above. What remains is the MAUI stack -
+    # Microcharts (meta), Microcharts.Maui and Microcharts.Core - a self-contained graph
+    # (the meta-package depends only on Core + Maui + SkiaSharp). Adjust the filter as
+    # ownership changes.
     - name: Publish packages to nuget.org
       if: ${{ inputs.publish_to_nuget }}
       run: |
-        Get-ChildItem artifacts/*.nupkg | ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json }
+        Get-ChildItem artifacts/*.nupkg |
+          Where-Object { $_.Name -notlike 'Microcharts.iOS.*' -and $_.Name -notlike 'Microcharts.Droid.*' } |
+          ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json }

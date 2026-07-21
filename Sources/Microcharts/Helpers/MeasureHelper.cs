@@ -87,7 +87,9 @@ namespace Microcharts
                     }
 
                     NiceScale.Calculate(minValue, maxValue, yAxisMaxTicks, out range, out tickSpacing, out niceMin, out niceMax);
-                    ticks = (int)(range / tickSpacing);
+                    // Count ticks across the actual [niceMin, niceMax] axis span, not the nice data range, so the
+                    // axis never overshoots below niceMin (issue #304) or drops the final tick.
+                    ticks = (int)((niceMax - niceMin) / tickSpacing) + 1;
                 }
                 else
                 {

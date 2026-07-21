@@ -64,7 +64,8 @@ namespace Microcharts.iOS
 
                     if (this.chart != null)
                     {
-                        this.handler = this.chart.ObserveInvalidate(this, (view) => view.InvalidateChart());
+                        // Marshal to the main thread: chart properties may be changed off the UI thread.
+                        this.handler = this.chart.ObserveInvalidate(this, (view) => view.BeginInvokeOnMainThread(view.InvalidateChart));
                     }
                 }
             }

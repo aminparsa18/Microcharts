@@ -39,8 +39,6 @@ namespace Microcharts
 
         private TimeSpan animationDuration = TimeSpan.FromSeconds(1.5f);
 
-        private Task invalidationPlanification;
-
         private CancellationTokenSource animationCancellation;
 
         #endregion
@@ -445,25 +443,6 @@ namespace Microcharts
         /// Invalidate the chart.
         /// </summary>
         protected void Invalidate() => Invalidated?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Planifies the invalidation.
-        /// </summary>
-        protected async void PlanifyInvalidate()
-        {
-            if (invalidationPlanification != null)
-            {
-                await invalidationPlanification;
-            }
-            else
-            {
-                invalidationPlanification = Task.Delay(200);
-                await invalidationPlanification;
-                Invalidate();
-                invalidationPlanification = null;
-            }
-        }
-
 
         #region Weak event handlers
 

@@ -56,7 +56,8 @@ namespace Microcharts.Droid
                     }
 
                     this.chart = value;
-                    this.Invalidate();
+                    // Marshal the initial invalidate too, in case Chart is assigned off the UI thread.
+                    this.PostInvalidate();
 
                     if (this.chart != null)
                     {

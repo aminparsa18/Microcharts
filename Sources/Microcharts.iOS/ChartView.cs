@@ -60,7 +60,8 @@ namespace Microcharts.iOS
                     }
 
                     this.chart = value;
-                    this.InvalidateChart();
+                    // Marshal the initial invalidate too, in case Chart is assigned off the UI thread.
+                    this.BeginInvokeOnMainThread(this.InvalidateChart);
 
                     if (this.chart != null)
                     {

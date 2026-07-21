@@ -56,11 +56,13 @@ namespace Microcharts.Droid
                     }
 
                     this.chart = value;
-                    this.Invalidate();
+                    // Marshal the initial invalidate too, in case Chart is assigned off the UI thread.
+                    this.PostInvalidate();
 
                     if (this.chart != null)
                     {
-                        this.handler = this.chart.ObserveInvalidate(this, (view) => { try { view.Invalidate(); } catch (ObjectDisposedException) { } });
+                        // PostInvalidate is safe from any thread: chart properties may be changed off the UI thread.
+                        this.handler = this.chart.ObserveInvalidate(this, (view) => { try { view.PostInvalidate(); } catch (ObjectDisposedException) { } });
                     }
                 }
             }

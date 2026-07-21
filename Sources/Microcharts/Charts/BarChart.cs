@@ -102,13 +102,16 @@ namespace Microcharts
         {
             var x = barX - (itemSize.Width / 2);
             var y = Math.Min(origin, barY);
-            var height = Math.Max(MinBarHeight, Math.Abs(origin - barY));
-            if (height < MinBarHeight)
+            var height = Math.Abs(origin - barY);
+            // Enforce a minimum height only for non-zero bars, so a zero-value bar stays empty (issue #263).
+            if (height > 0 && height < MinBarHeight)
             {
                 height = MinBarHeight;
-                if (y + height > Margin + itemSize.Height)
+                // Keep the bar anchored to the axis origin: a positive bar grows up from origin
+                // (a negative bar's top is already at origin and grows down from it).
+                if (barY < origin)
                 {
-                    y = headerHeight + itemSize.Height - height;
+                    y = origin - height;
                 }
             }
 

@@ -88,7 +88,10 @@ namespace Microcharts
                 var cx = width / 2;
                 var cy = height / 2;
                 var lineWidth = (LineSize < 0) ? (radius / ((Entries.Count() + 1) * 2)) : LineSize;
-                var radiusSpace = lineWidth * 2;
+                // Space the rings by the available radius rather than the stroke width, so a custom
+                // LineSize changes only the line thickness, not the overall gauge size (issue #138).
+                // In the auto case (LineSize < 0) this equals lineWidth * 2, so behaviour is unchanged.
+                var radiusSpace = radius / (Entries.Count() + 1);
 
                 for (int i = 0; i < Entries.Count(); i++)
                 {

@@ -30,6 +30,17 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+		<DebugType>full</DebugType>
+		<Debuggable>true</Debuggable>
+		<EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+		<ApplicationDisplayVersion>3.0.5</ApplicationDisplayVersion>
+		<ApplicationVersion>1012</ApplicationVersion>
+		<EnableLLVM>False</EnableLLVM>
+		<AndroidDebuggable>true</AndroidDebuggable>
+		<AndroidEnableMultiDex>True</AndroidEnableMultiDex>
+	</PropertyGroup> 
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
     <RunAOTCompilation>False</RunAOTCompilation>
   </PropertyGroup>

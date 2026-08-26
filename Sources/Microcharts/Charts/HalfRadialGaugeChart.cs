@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using SkiaSharp;
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts
 {
@@ -45,47 +45,40 @@ namespace Microcharts
 
         #region Methods
 
-        public void DrawGaugeArea(SKCanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
+        public void DrawGaugeArea(ICanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
         {
-            using (var paint = new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = strokeWidth,
-                StrokeCap = SKStrokeCap.Round,
-                Color = entry.Color.WithAlpha(LineAreaAlpha),
-                IsAntialias = true,
-            })
-            {
-                using (SKPath path = new SKPath())
-                {
-                    path.AddArc(SKRect.Create(cx - radius * 2, cy - radius * 2, 4 * radius, 4 * radius), 180, 180);
-                    canvas.DrawPath(path, paint);
-                }
-            }
+            canvas.SaveState();
+            canvas.StrokeColor = entry.Color.WithAlpha(LineAreaAlpha / 255f);
+            canvas.StrokeSize = strokeWidth;
+            canvas.StrokeLineCap = LineCap.Round;
+            canvas.Antialias = true;
+
+            var path = RadialHelpers.CreateArcPath(cx, cy, radius * 2, 180, 180);
+            canvas.DrawPath(path);
+
+            canvas.RestoreState();
         }
 
-        public void DrawGauge(SKCanvas canvas, SKColor color, float value, float radius, int cx, int cy, float strokeWidth)
+        public void DrawGauge(ICanvas canvas, Color color, float value, float radius, int cx, int cy, float strokeWidth)
         {
-            using (var paint = new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = strokeWidth,
-                StrokeCap = SKStrokeCap.Round,
-                Color = color,
-                IsAntialias = true,
-            })
-            {
-                using (SKPath path = new SKPath())
-                {
-                    var sweepAngle =  AnimationProgress * 180 * (Math.Abs(value) - AbsoluteMinimum) / ValueRange;
-                    path.AddArc(SKRect.Create(cx - radius * 2, cy - radius * 2, 4 * radius, 4 * radius), 180, sweepAngle);
-                    canvas.DrawPath(path, paint);
-                }
-            }
+            canvas.SaveState();
+            canvas.StrokeColor = color;
+            canvas.StrokeSize = strokeWidth;
+            canvas.StrokeLineCap = LineCap.Round;
+            canvas.Antialias = true;
+
+            var sweepAngle = AnimationProgress * 180 * (Math.Abs(value) - AbsoluteMinimum) / ValueRange;
+            var path = RadialHelpers.CreateArcPath(cx, cy, radius * 2, 180, sweepAngle);
+            canvas.DrawPath(path);
+
+            canvas.RestoreState();
         }
 
-        public override void DrawContent(SKCanvas canvas, int width, int height)
+        public override void DrawContent(ICanvas canvas, RectF dirtyRect)
         {
+            int width = (int)dirtyRect.Width;
+            int height = (int)dirtyRect.Height;
+
             if (Entries != null)
             {
                 DrawCaption(canvas, width, height);
@@ -107,7 +100,7 @@ namespace Microcharts
                     if (!entry.Value.HasValue) continue;
 
                     var entryRadius = (i + 1) * radiusSpace;
-                    if (entries.Count() == 1)
+                    if (Entries.Count() == 1)
                         entryRadius = radius - radiusSpace / 2;
                     DrawGaugeArea(canvas, entry, entryRadius, cx, cy, lineWidth);
                     DrawGauge(canvas, entry.Color, entry.Value.Value, entryRadius, cx, cy, lineWidth);
@@ -115,7 +108,7 @@ namespace Microcharts
             }
         }
 
-        private void DrawCaption(SKCanvas canvas, int width, int height)
+        private void DrawCaption(ICanvas canvas, int width, int height)
         {
             var rightValues = Entries.Take(Entries.Count() / 2).ToList();
             var leftValues = Entries.Skip(rightValues.Count()).ToList();

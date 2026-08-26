@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SkiaSharp;
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts
 {
@@ -37,28 +37,28 @@ namespace Microcharts
 
         #region Methods
 
-        public override void DrawContent(SKCanvas canvas, int width, int height)
+        public override void DrawContent(ICanvas canvas, RectF dirtyRect)
         {
+            int width = (int)dirtyRect.Width;
+            int height = (int)dirtyRect.Height;
+
             if (Entries != null)
             {
                 DrawCaption(canvas, width, height);
-                using (new SKAutoCanvasRestore(canvas))
+
+                canvas.SaveState();
+                try
                 {
                     if (DrawDebugRectangles)
                     {
-                        using (var paint = new SKPaint
-                        {
-                            Color = SKColors.Red,
-                            IsStroke = true,
-                        })
-                        {
-                            canvas.DrawRect(DrawableChartArea, paint);
-                        }
+                        canvas.StrokeColor = Colors.Red;
+                        canvas.StrokeSize = 1;
+                        canvas.DrawRectangle(DrawableChartArea);
                     }
 
-                    canvas.Translate(DrawableChartArea.Left + DrawableChartArea.Width / 2, height / 2);
+                    canvas.Translate(DrawableChartArea.Left + (DrawableChartArea.Width / 2), height / 2);
 
-                    var sumValue = Entries.Where( x => x.Value.HasValue ).Sum(x => Math.Abs(x.Value.Value));
+                    var sumValue = Entries.Where(x => x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
                     var radius = (Math.Min(DrawableChartArea.Width, DrawableChartArea.Height) - (2 * Margin)) / 2;
                     var start = 0.0f;
 
@@ -71,26 +71,24 @@ namespace Microcharts
 
                         // Sector
                         var path = RadialHelpers.CreateSectorPath(start, end, radius, radius * HoleRadius);
-                        using (var paint = new SKPaint
-                        {
-                            Style = SKPaintStyle.Fill,
-                            Color = entry.Color,
-                            IsAntialias = true,
-                        })
-                        {
-                            canvas.DrawPath(path, paint);
-                        }
+                        canvas.FillColor = entry.Color;
+                        canvas.Antialias = true;
+                        canvas.FillPath(path, WindingMode.EvenOdd);
 
                         start = end;
                     }
                 }
+                finally
+                {
+                    canvas.RestoreState();
+                }
             }
         }
 
-        private void DrawCaption(SKCanvas canvas, int width, int height)
+        private void DrawCaption(ICanvas canvas, int width, int height)
         {
             var isGraphCentered = GraphPosition == GraphPosition.Center;
-            var sumValue = Entries.Where( x => x.Value.HasValue ).Sum(x => Math.Abs(x.Value.Value));
+            var sumValue = Entries.Where(x => x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
 
             switch (LabelMode)
             {
@@ -107,7 +105,7 @@ namespace Microcharts
             }
         }
 
-        private void DrawCaptionLeftAndRight(SKCanvas canvas, int width, int height, bool isGraphCentered)
+        private void DrawCaptionLeftAndRight(ICanvas canvas, int width, int height, bool isGraphCentered)
         {
             var sumValue = Entries.Where(x => x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
             var rightValues = new List<ChartEntry>();

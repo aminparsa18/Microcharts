@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using SkiaSharp;
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts
 {
@@ -45,42 +45,36 @@ namespace Microcharts
 
         #region Methods
 
-        public void DrawGaugeArea(SKCanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
+        public void DrawGaugeArea(ICanvas canvas, ChartEntry entry, float radius, int cx, int cy, float strokeWidth)
         {
-            using (var paint = new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = strokeWidth,
-                Color = entry.Color.WithAlpha(LineAreaAlpha),
-                IsAntialias = true,
-            })
-            {
-                canvas.DrawCircle(cx, cy, radius, paint);
-            }
+            canvas.SaveState();
+            canvas.StrokeColor = entry.Color.WithAlpha(LineAreaAlpha / 255f);
+            canvas.StrokeSize = strokeWidth;
+            canvas.Antialias = true;
+            canvas.DrawEllipse(cx - radius, cy - radius, 2 * radius, 2 * radius);
+            canvas.RestoreState();
         }
 
-        public void DrawGauge(SKCanvas canvas, SKColor color, float value, float radius, int cx, int cy, float strokeWidth)
+        public void DrawGauge(ICanvas canvas, Color color, float value, float radius, int cx, int cy, float strokeWidth)
         {
-            using (var paint = new SKPaint
-            {
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = strokeWidth,
-                StrokeCap = SKStrokeCap.Round,
-                Color = color,
-                IsAntialias = true,
-            })
-            {
-                using (SKPath path = new SKPath())
-                {
-                    var sweepAngle = AnimationProgress * 360 * (Math.Abs(value) - AbsoluteMinimum) / ValueRange;
-                    path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), StartAngle, sweepAngle);
-                    canvas.DrawPath(path, paint);
-                }
-            }
+            canvas.SaveState();
+            canvas.StrokeColor = color;
+            canvas.StrokeSize = strokeWidth;
+            canvas.StrokeLineCap = LineCap.Round;
+            canvas.Antialias = true;
+
+            var sweepAngle = AnimationProgress * 360 * (Math.Abs(value) - AbsoluteMinimum) / ValueRange;
+            var path = RadialHelpers.CreateArcPath(cx, cy, radius, StartAngle, sweepAngle);
+            canvas.DrawPath(path);
+
+            canvas.RestoreState();
         }
 
-        public override void DrawContent(SKCanvas canvas, int width, int height)
+        public override void DrawContent(ICanvas canvas, RectF dirtyRect)
         {
+            int width = (int)dirtyRect.Width;
+            int height = (int)dirtyRect.Height;
+
             if (Entries != null)
             {
                 var sumValue = Entries.Where( x=>x.Value.HasValue).Sum(x => Math.Abs(x.Value.Value));
@@ -106,11 +100,11 @@ namespace Microcharts
                 }
 
                 //Make sure captions draw on top of chart
-                DrawCaption(canvas, width, height); 
+                DrawCaption(canvas, width, height);
             }
         }
 
-        private void DrawCaption(SKCanvas canvas, int width, int height)
+        private void DrawCaption(ICanvas canvas, int width, int height)
         {
             var rightValues = Entries.Take(Entries.Count() / 2).ToList();
             var leftValues = Entries.Skip(rightValues.Count()).ToList();

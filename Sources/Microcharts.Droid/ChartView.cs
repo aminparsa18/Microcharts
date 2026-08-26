@@ -1,33 +1,43 @@
 namespace Microcharts.Droid
 {
-    using Android.Content;
-    using SkiaSharp.Views.Android;
-    using Android.Util;
     using System;
+    using Android.Content;
+    using Android.Graphics;
     using Android.Runtime;
+    using Android.Util;
+    using Android.Views;
+    using Microsoft.Maui.Graphics.Platform;
+    using MauiRectF = Microsoft.Maui.Graphics.RectF;
 
-    public class ChartView : SKCanvasView
+    public class ChartView : View
     {
         #region Constructors
 
         public ChartView(Context context) : base(context)
         {
-            this.PaintSurface += OnPaintCanvas;
+            Initialize();
         }
 
         public ChartView(Context context, IAttributeSet attributes) : base(context, attributes)
         {
-            this.PaintSurface += OnPaintCanvas;
+            Initialize();
         }
 
         public ChartView(Context context, IAttributeSet attributes, int defStyleAtt) : base(context, attributes, defStyleAtt)
         {
-            this.PaintSurface += OnPaintCanvas;
+            Initialize();
         }
 
         public ChartView(IntPtr ptr, JniHandleOwnership jni) : base(ptr, jni)
         {
-            this.PaintSurface += OnPaintCanvas;
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            // A plain View skips OnDraw entirely unless told otherwise, since it assumes a background-less
+            // View (no Drawable background set here) has nothing to paint.
+            SetWillNotDraw(false);
         }
 
         #endregion
@@ -72,11 +82,34 @@ namespace Microcharts.Droid
 
         #region Methods
 
-        private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
+        /// <remarks>
+        /// This is a pure-native (non-MAUI-controls) package, so there is no <c>GraphicsView</c> handler to
+        /// draw through -- <c>Microsoft.Maui.Graphics.Platform.PlatformCanvas</c> (the same type MAUI's own
+        /// handler uses internally) is driven directly off the <see cref="Canvas"/> <c>OnDraw</c> hands us.
+        ///
+        /// Android's <see cref="Canvas"/> here is already pixel-space (View.Width/Height are pixels), matching
+        /// the pre-migration SkiaSharp-based <c>SKCanvasView</c>'s behavior (it did not set
+        /// <c>IgnorePixelScaling</c>, so it drew in device pixels too). <see cref="PlatformCanvas"/>'s
+        /// constructor otherwise auto-sets <c>DisplayScale</c> from the device density, which would rescale
+        /// every draw call -- that's overridden back to 1 to preserve exact pixel-space parity with the old
+        /// rendering, the same way the iOS port compensates for the opposite (point-space) default.
+        ///
+        /// Also fixes the pre-migration asymmetry where a null <see cref="Chart"/> left stale content on
+        /// screen here (unlike the iOS/MAUI views, which always clear) -- explicitly clears to transparent.
+        /// </remarks>
+        protected override void OnDraw(Canvas canvas)
         {
-            if (this.chart != null)
+            base.OnDraw(canvas);
+
+            if (this.chart == null)
             {
-                this.chart.Draw(e.Surface.Canvas, e.Info.Width, e.Info.Height);
+                canvas.DrawColor(Color.Transparent, PorterDuff.Mode.Clear);
+                return;
+            }
+
+            using (var platformCanvas = new PlatformCanvas(Context) { Canvas = canvas, DisplayScale = 1f })
+            {
+                this.chart.Draw(platformCanvas, new MauiRectF(0, 0, this.Width, this.Height));
             }
         }
 

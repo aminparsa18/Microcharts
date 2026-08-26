@@ -318,7 +318,7 @@ namespace Microcharts
             if (LegendOption == SeriesLegendOption.None)
                 return;
 
-            if (Series.Any(s => !s.Color.HasValue))
+            if (Series.Any(s => s.Color == null))
                 throw new ArgumentNullException(nameof(ChartSerie.Color), "Unable to draw legend without set a color in ChartSerie");
 
             float lineHeight = Math.Max(seriesNameSize.Where(b => !b.IsEmpty).Select(b => b.Height).FirstOrDefault(), SerieLabelTextSize);
@@ -362,7 +362,7 @@ namespace Microcharts
 
         private float GenerateSerieLegend(ICanvas canvas, float lineHeight, float origin, int nbLine, float currentWidthUsed, ChartSerie serie)
         {
-            var legendColor = serie.Color.Value.MultiplyAlpha(AnimationProgress);
+            var legendColor = serie.Color.MultiplyAlpha(AnimationProgress);
             var lblColor = LabelColor.MultiplyAlpha(AnimationProgress);
             var yPosition = origin + (nbLine - 1) * (lineHeight + Margin);
             var rect = new RectF(currentWidthUsed + Margin, yPosition, SerieLabelTextSize, SerieLabelTextSize);

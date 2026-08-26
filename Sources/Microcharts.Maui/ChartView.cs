@@ -2,18 +2,15 @@ namespace Microcharts.Maui
 {
     using Microsoft.Maui.Controls;
     using Microsoft.Maui.Graphics;
-    using SkiaSharp;
-    using SkiaSharp.Views.Maui;
-    using SkiaSharp.Views.Maui.Controls;
 
-    public class ChartView : SKCanvasView
+    public class ChartView : GraphicsView, IDrawable
     {
         #region Constructors
 
         public ChartView()
         {
+            this.Drawable = this;
             this.BackgroundColor = Colors.Transparent;
-            this.PaintSurface += OnPaintCanvas;
         }
 
         #endregion
@@ -55,23 +52,24 @@ namespace Microcharts.Maui
             }
 
             view.chart = value as Chart;
-            view.InvalidateSurface();
+            view.Invalidate();
 
             if (view.chart != null)
             {
-                view.handler = view.chart.ObserveInvalidate(view, (v) => v.Dispatcher.Dispatch(v.InvalidateSurface));
+                view.handler = view.chart.ObserveInvalidate(view, (v) => v.Dispatcher.Dispatch(v.Invalidate));
             }
         }
 
-        private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
+        public void Draw(ICanvas canvas, RectF dirtyRect)
         {
             if (this.chart != null)
             {
-                this.chart.Draw(e.Surface.Canvas, e.Info.Width, e.Info.Height);
+                this.chart.Draw(canvas, dirtyRect);
             }
             else
             {
-                e.Surface.Canvas.Clear(SKColors.Transparent);
+                canvas.FillColor = Colors.Transparent;
+                canvas.FillRectangle(dirtyRect);
             }
         }
 

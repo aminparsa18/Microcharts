@@ -1,14 +1,14 @@
-﻿using System;
+using System;
+using CoreGraphics;
 using Foundation;
-using SkiaSharp;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Graphics.Platform;
 using UIKit;
-using SkiaSharp.Views.iOS;
-using System.Diagnostics;
 
 namespace Microcharts.iOS
 {
     [Register("ChartView")]
-    public class ChartView : SKCanvasView
+    public class ChartView : UIView
     {
         #region Constructors
 
@@ -31,7 +31,7 @@ namespace Microcharts.iOS
         private void Initialize()
         {
             this.BackgroundColor = UIColor.Clear;
-            this.PaintSurface += OnPaintCanvas;
+            this.Opaque = false;
         }
 
         #endregion
@@ -78,16 +78,47 @@ namespace Microcharts.iOS
 
         private void InvalidateChart() => this.SetNeedsDisplayInRect(this.Bounds);
 
-        private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
+        /// <remarks>
+        /// This is a pure-native (non-MAUI-controls) package, so there is no <c>GraphicsView</c> handler to
+        /// draw through -- <c>Microsoft.Maui.Graphics.Platform.PlatformCanvas</c> (the same type MAUI's own
+        /// handler uses internally) is driven directly off the <see cref="CGContext"/> <c>DrawRect</c> hands us.
+        ///
+        /// <c>DrawRect</c>'s <see cref="CGContext"/> is in points, not device pixels (UIKit rasterizes the
+        /// backing store at the screen's scale factor transparently). The pre-migration SkiaSharp-based
+        /// <c>SKCanvasView</c> here did not set <c>IgnorePixelScaling</c>, so it drew (and sized Margin,
+        /// LineSize, LabelTextSize, etc.) directly in device pixels -- to preserve that exact visual output
+        /// (rather than silently resizing every chart by the screen's scale factor), the context is scaled by
+        /// <c>1/scale</c> so that one Microcharts drawing unit still maps to one physical pixel, and
+        /// <see cref="Chart.Draw"/> is handed the pixel, not point, dimensions.
+        /// </remarks>
+        public override void Draw(CGRect rect)
         {
-            if (this.chart != null)
+            base.Draw(rect);
+
+            if (this.chart == null)
             {
-                this.chart.Draw(e.Surface.Canvas, e.Info.Width, e.Info.Height);
+                return;
             }
-            else
+
+            var context = UIGraphics.GetCurrentContext();
+            if (context == null)
             {
-                e.Surface.Canvas.Clear(SKColors.Transparent);
+                return;
             }
+
+            var scale = (float)(this.ContentScaleFactor > 0 ? this.ContentScaleFactor : 1f);
+            var pixelWidth = (float)(this.Bounds.Width * scale);
+            var pixelHeight = (float)(this.Bounds.Height * scale);
+
+            context.SaveState();
+            context.ScaleCTM((nfloat)(1f / scale), (nfloat)(1f / scale));
+
+            using (var canvas = new PlatformCanvas(() => CGColorSpace.CreateDeviceRGB()) { Context = context })
+            {
+                this.chart.Draw(canvas, new RectF(0, 0, pixelWidth, pixelHeight));
+            }
+
+            context.RestoreState();
         }
 
         #endregion

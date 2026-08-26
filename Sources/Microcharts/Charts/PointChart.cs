@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using SkiaSharp;
+using Microcharts.Abstracts;
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts
 {
@@ -47,63 +48,68 @@ namespace Microcharts
         #region Methods
 
         /// <inheritdoc />
-        protected override void DrawValueLabel(SKCanvas canvas, Dictionary<ChartEntry, SKRect> valueLabelSizes, float headerWithLegendHeight, SKSize itemSize, SKSize barSize, ChartEntry entry, float barX, float barY, float itemX, float origin)
+        protected override void DrawValueLabel(ICanvas canvas, Dictionary<ChartEntry, RectF> valueLabelSizes, float headerWithLegendHeight, SizeF itemSize, SizeF barSize, ChartEntry entry, float barX, float barY, float itemX, float origin)
         {
             string label = entry?.ValueLabel;
             if (string.IsNullOrEmpty(label))
                 return;
 
-            var drawedPoint = new SKPoint(barX - (itemSize.Width / 2) + (barSize.Width / 2), barY);
+            var drawedPoint = new PointF(barX - (itemSize.Width / 2) + (barSize.Width / 2), barY);
             if (ValueLabelOption == ValueLabelOption.TopOfChart)
                 base.DrawValueLabel(canvas, valueLabelSizes, headerWithLegendHeight, itemSize, barSize, entry, barX, barY, itemX, origin);
             else if (ValueLabelOption == ValueLabelOption.TopOfElement)
-                DrawHelper.DrawLabel(canvas, ValueLabelOrientation, ValueLabelOrientation == Orientation.Vertical ? YPositionBehavior.UpToElementHeight : YPositionBehavior.None, barSize, new SKPoint(drawedPoint.X, drawedPoint.Y - (PointSize / 2) - (Margin / 2)), entry.ValueLabelColor.WithAlpha((byte)(255 * AnimationProgress)), valueLabelSizes[entry], label, ValueLabelTextSize, Typeface);
+                DrawHelper.DrawLabel(canvas, TextMetricsProvider, ValueLabelOrientation, ValueLabelOrientation == Orientation.Vertical ? YPositionBehavior.UpToElementHeight : YPositionBehavior.None, barSize, new PointF(drawedPoint.X, drawedPoint.Y - (PointSize / 2) - (Margin / 2)), entry.ValueLabelColor.MultiplyAlpha(AnimationProgress), valueLabelSizes[entry], label, ValueLabelTextSize, Typeface);
             else if (ValueLabelOption == ValueLabelOption.OverElement)
-                DrawHelper.DrawLabel(canvas, ValueLabelOrientation, ValueLabelOrientation == Orientation.Vertical ? YPositionBehavior.UpToElementMiddle : YPositionBehavior.DownToElementMiddle, barSize, new SKPoint(drawedPoint.X, drawedPoint.Y), entry.ValueLabelColor.WithAlpha((byte)(255 * AnimationProgress)), valueLabelSizes[entry], label, ValueLabelTextSize, Typeface);
+                DrawHelper.DrawLabel(canvas, TextMetricsProvider, ValueLabelOrientation, ValueLabelOrientation == Orientation.Vertical ? YPositionBehavior.UpToElementMiddle : YPositionBehavior.DownToElementMiddle, barSize, new PointF(drawedPoint.X, drawedPoint.Y), entry.ValueLabelColor.MultiplyAlpha(AnimationProgress), valueLabelSizes[entry], label, ValueLabelTextSize, Typeface);
         }
 
         /// <inheritdoc />
-        protected override void DrawBar(ChartSerie serie, SKCanvas canvas, float headerHeight, float itemX, SKSize itemSize, SKSize barSize, float origin, float barX, float barY, SKColor color)
+        protected override void DrawBar(ChartSerie serie, ICanvas canvas, float headerHeight, float itemX, SizeF itemSize, SizeF barSize, float origin, float barX, float barY, Color color)
         {
             if (PointMode != PointMode.None)
             {
-                var point = new SKPoint(barX - (itemSize.Width / 2) + (barSize.Width / 2), barY);
+                var point = new PointF(barX - (itemSize.Width / 2) + (barSize.Width / 2), barY);
                 canvas.DrawPoint(point, color, PointSize, PointMode);
             }
         }
 
         /// <inheritdoc />
-        protected override void DrawBarArea(SKCanvas canvas, float headerHeight, SKSize itemSize, SKSize barSize, SKColor color, SKColor otherColor, float origin, float value, float barX, float barY)
+        protected override void DrawBarArea(ICanvas canvas, float headerHeight, SizeF itemSize, SizeF barSize, Color color, Color otherColor, float origin, float value, float barX, float barY)
         {
-            SKColor fillColor = SKColor.Empty;
-            SKColor[] colors = new SKColor[2];
-            if (otherColor != SKColor.Empty)
+            Color fillColor = null;
+            Color startColor = null, endColor = null;
+            if (otherColor != null)
             {
                 fillColor = otherColor;
-                colors[0] = otherColor;
-                colors[1] = otherColor.WithAlpha((byte)(100 / 3));
+                startColor = otherColor;
+                // Matches the original literal `(byte)(100 / 3)` -- a hardcoded alpha, not derived from PointAreaAlpha.
+                endColor = otherColor.WithAlpha((100 / 3) / 255f);
             }
             else if (PointAreaAlpha > 0)
             {
-                fillColor = color.WithAlpha(PointAreaAlpha);
-                colors[0] = color.WithAlpha(PointAreaAlpha);
-                colors[1] = color.WithAlpha((byte)(PointAreaAlpha / 3));
+                fillColor = color.WithAlpha(PointAreaAlpha / 255f);
+                startColor = fillColor;
+                endColor = color.WithAlpha((PointAreaAlpha / 3) / 255f);
             }
 
-            if (fillColor != SKColor.Empty)
+            if (fillColor != null)
             {
                 var y = Math.Min(origin, barY);
-                using (var shader = SKShader.CreateLinearGradient(new SKPoint(0, origin), new SKPoint(0, barY), colors, null, SKShaderTileMode.Clamp))
-                using (var paint = new SKPaint
+                var height = Math.Max(2, Math.Abs(origin - barY));
+                var rect = new RectF(barX - (itemSize.Width / 2) + (barSize.Width / 2) - (PointSize / 2), y, PointSize, height);
+
+                // ICanvas has no gradient-stroke primitive, but this is a fill, so the two-stop vertical
+                // gradient ports directly onto SetFillPaint + FillRectangle.
+                var gradient = new LinearGradientPaint(new PointF(0, origin), new PointF(0, barY))
                 {
-                    Style = SKPaintStyle.Fill,
-                    Color = fillColor,
-                })
-                {
-                    paint.Shader = shader;
-                    var height = Math.Max(2, Math.Abs(origin - barY));
-                    canvas.DrawRect(SKRect.Create(barX - (itemSize.Width / 2) + (barSize.Width / 2) - (PointSize / 2), y, PointSize, height), paint);
-                }
+                    StartColor = startColor,
+                    EndColor = endColor,
+                };
+
+                canvas.SaveState();
+                canvas.SetFillPaint(gradient, rect);
+                canvas.FillRectangle(rect);
+                canvas.RestoreState();
             }
         }
 

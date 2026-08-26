@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.20" />
     <ProjectReference Include="..\Microcharts\Microcharts.csproj" />
   </ItemGroup>
 </Project>

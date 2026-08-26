@@ -15,9 +15,6 @@
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views" Version="3.119.4" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="../Microcharts.iOS/Microcharts.iOS.csproj" />
     <ProjectReference Include="../Microcharts.Samples/Microcharts.Samples.csproj" />
     <ProjectReference Include="../Microcharts/Microcharts.csproj" />

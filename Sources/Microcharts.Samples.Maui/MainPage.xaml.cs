@@ -24,10 +24,5 @@ namespace Microcharts.Samples.Maui
             ChartItem chartItem = border.BindingContext as ChartItem;
             Navigation.PushAsync(new ChartConfigurationPage(chartItem.Name));
         }
-
-        private void TapGestureRecognizerLegacyChartsTapped(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new LegacyPage());
-        }
     }
 }

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SkiaSharp;
-#pragma warning disable CS0618 // Type or member is obsolete
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts.Samples
 {
@@ -10,27 +9,27 @@ namespace Microcharts.Samples
     {
         #region Colors
 
-        public static readonly SKColor TextColor = SKColors.Gray;
+        public static readonly Color TextColor = Microsoft.Maui.Graphics.Colors.Gray;
 
-        public static readonly SKColor[] Colors =
+        public static readonly Color[] Colors =
         {
-            SKColor.Parse("#266489"),
-            SKColor.Parse("#68B9C0"),
-            SKColor.Parse("#90D585"),
-            SKColor.Parse("#F3C151"),
-            SKColor.Parse("#F37F64"),
-            SKColor.Parse("#424856"),
-            SKColor.Parse("#8F97A4"),
-            SKColor.Parse("#DAC096"),
-            SKColor.Parse("#76846E"),
-            SKColor.Parse("#DABFAF"),
-            SKColor.Parse("#A65B69"),
-            SKColor.Parse("#97A69D"),
+            Color.Parse("#266489"),
+            Color.Parse("#68B9C0"),
+            Color.Parse("#90D585"),
+            Color.Parse("#F3C151"),
+            Color.Parse("#F37F64"),
+            Color.Parse("#424856"),
+            Color.Parse("#8F97A4"),
+            Color.Parse("#DAC096"),
+            Color.Parse("#76846E"),
+            Color.Parse("#DABFAF"),
+            Color.Parse("#A65B69"),
+            Color.Parse("#97A69D"),
         };
 
         private static int ColorIndex = 0;
 
-        public static SKColor NextColor()
+        public static Color NextColor()
         {
             var result = Colors[ColorIndex];
             ColorIndex = (ColorIndex + 1) % Colors.Length;
@@ -89,35 +88,6 @@ namespace Microcharts.Samples
 
         };
 
-        public static Chart[] CreateXamarinLegacySample()
-        {
-            ChartEntry[] entries = GenerateDefaultXamarinEntries();
-            return
-            [
-                new LegacyBarChart
-                {
-                    Entries = entries,
-                    LabelTextSize = 42,
-                    LabelOrientation = Orientation.Horizontal
-                },
-                new LegacyPointChart
-                {
-                    Entries = entries,
-                    LabelTextSize = 42,
-                    LabelOrientation = Orientation.Horizontal
-                },
-                new LegacyLineChart
-                {
-                    Entries = entries,
-                    LineMode = LineMode.Straight,
-                    LineSize = 8,
-                    LabelTextSize = 42,
-                    PointMode = PointMode.Square,
-                    PointSize = 18,
-                }
-            ];
-        }
-
         public static Chart[] CreateXamarinSample()
         {
             ChartEntry[] entries = GenerateDefaultXamarinEntries();
@@ -138,19 +108,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -168,19 +138,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -198,19 +168,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 4),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 4),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 4),
                         },
                     }
@@ -248,31 +218,31 @@ namespace Microcharts.Samples
                 {
                     Label = "UWP",
                     ValueLabel = "112",
-                    Color = SKColor.Parse("#2c3e50"),
+                    Color = Color.Parse("#2c3e50"),
                 },
                 new ChartEntry(648)
                 {
                     Label = "Android",
                     ValueLabel = "648",
-                    Color = SKColor.Parse("#77d065"),
+                    Color = Color.Parse("#77d065"),
                 },
                 new ChartEntry(null)
                 {
                     Label = "React",
                     ValueLabel = "",
-                    Color = SKColor.Parse("#db3498"),
+                    Color = Color.Parse("#db3498"),
                 },
                 new ChartEntry(428)
                 {
                     Label = "iOS",
                     ValueLabel = "428",
-                    Color = SKColor.Parse("#b455b6"),
+                    Color = Color.Parse("#b455b6"),
                 },
                 new ChartEntry(514)
                 {
                     Label = "Forms",
                     ValueLabel = "514",
-                    Color = SKColor.Parse("#3498db"),
+                    Color = Color.Parse("#3498db"),
                 }
             ];
         }
@@ -281,9 +251,6 @@ namespace Microcharts.Samples
         {
             return chartType switch
             {
-                nameof(LegacyBarChart) => GenerateBarChartExample(),
-                nameof(LegacyPointChart) => GeneratePointChartExample(),
-                nameof(LegacyLineChart) => GenerateLineChartExample(),
                 nameof(DonutChart) => GenerateDonutChartExample(),
                 nameof(RadialGaugeChart) => GenerateRadialGaugeChartExample(),
                 nameof(HalfRadialGaugeChart) => GenerateHalfRadialGaugeChartExample(),
@@ -292,60 +259,6 @@ namespace Microcharts.Samples
                 nameof(PointChart) => GeneratePointSeriesChartExample(),
                 nameof(LineChart) => GenerateLineSeriesChartExample(),
                 _ => null
-            };
-        }
-
-        private static IEnumerable<ExampleChartItem> GenerateLineChartExample()
-        {
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Default",
-                ExampleTextDescription = "Default example",
-                Chart = new LegacyLineChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LineMode = LineMode.Straight,
-                    LineSize = 8,
-                    LabelTextSize = 42,
-                    PointMode = PointMode.Square,
-                    PointSize = 18,
-                },
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at right",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyLineChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LineMode = LineMode.Straight,
-                    LineSize = 8,
-                    LabelTextSize = 42,
-                    PointMode = PointMode.Square,
-                    PointSize = 18,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    YAxisPosition = Position.Right
-                }
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at left",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyLineChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LineMode = LineMode.Straight,
-                    LineSize = 8,
-                    LabelTextSize = 42,
-                    PointMode = PointMode.Square,
-                    PointSize = 18,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    YAxisPosition = Position.Left
-                }
             };
         }
 
@@ -376,13 +289,13 @@ namespace Microcharts.Samples
                         {
                             Label = "Android",
                             ValueLabel = "458",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                         },
                         new ChartEntry(128)
                         {
                             Label = "iOS",
                             ValueLabel = "128",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                         },
                     },
                     LabelTextSize = 32,
@@ -601,19 +514,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -638,19 +551,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -675,19 +588,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -714,19 +627,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                     }
@@ -754,19 +667,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -795,19 +708,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -835,19 +748,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -874,19 +787,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, withLabel:false),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, withLabel:false),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, withLabel:false),
                         },
                     }
@@ -1032,19 +945,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -1069,19 +982,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -1106,19 +1019,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r),
                         },
                     }
@@ -1145,19 +1058,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 3, true, true),
                         },
                     }
@@ -1230,19 +1143,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                     }
@@ -1269,19 +1182,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                     }
@@ -1308,19 +1221,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                     }
@@ -1348,19 +1261,19 @@ namespace Microcharts.Samples
                         new ChartSerie()
                         {
                             Name = "UWP",
-                            Color = SKColor.Parse("#2c3e50"),
+                            Color = Color.Parse("#2c3e50"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "Android",
-                            Color = SKColor.Parse("#77d065"),
+                            Color = Color.Parse("#77d065"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                         new ChartSerie()
                         {
                             Name = "iOS",
-                            Color = SKColor.Parse("#b455b6"),
+                            Color = Color.Parse("#b455b6"),
                             Entries = GenerateSeriesEntry(r, 5),
                         },
                     }
@@ -1430,97 +1343,6 @@ namespace Microcharts.Samples
             yield break;
         }
 
-        private static IEnumerable<ExampleChartItem> GeneratePointChartExample()
-        {
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Default",
-                ExampleTextDescription = "Default example",
-                Chart = new LegacyPointChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    LabelOrientation = Orientation.Horizontal
-                },
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at right",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyPointChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    LabelOrientation = Orientation.Horizontal,
-                    YAxisPosition = Position.Right
-                }
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at left",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyPointChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    LabelOrientation = Orientation.Horizontal,
-                    YAxisPosition = Position.Left
-                }
-            };
-        }
-
-        private static IEnumerable<ExampleChartItem> GenerateBarChartExample()
-        {
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Default",
-                ExampleTextDescription = "Default example",
-                Chart = new LegacyBarChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    LabelOrientation = Orientation.Horizontal
-                }
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at right",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyBarChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    LabelOrientation = Orientation.Horizontal,
-                    ValueLabelOrientation = Orientation.Horizontal,
-                    YAxisPosition = Position.Right
-                }
-            };
-
-            yield return new ExampleChartItem()
-            {
-                ExampleName = "Show Y axis at left",
-                ExampleTextDescription = "Display Y axis lines and values",
-                Chart = new LegacyBarChart
-                {
-                    Entries = GenerateDefaultXamarinEntries(),
-                    LabelTextSize = 42,
-                    ShowYAxisLines = true,
-                    ShowYAxisText = true,
-                    LabelOrientation = Orientation.Horizontal,
-                    YAxisPosition = Position.Left
-                }
-            };
-        }
-
         public static IEnumerable<ChartEntry> GenerateTimeSeriesEntry( Random r, int idx, int seconds, bool withNulls = true)
         {
             List<ChartEntry> entries = new List<ChartEntry>();
@@ -1579,51 +1401,51 @@ namespace Microcharts.Samples
                 {
                     Label = "Week 1",
                     ValueLabel = "200",
-                    Color = SKColor.Parse("#266489")
+                    Color = Color.Parse("#266489")
                 },
                 new ChartEntry(400)
                 {
                     Label = "Week 2",
                     ValueLabel = "400",
-                    Color = SKColor.Parse("#68B9C0")
+                    Color = Color.Parse("#68B9C0")
                 },
                 new ChartEntry(100)
                 {
                     Label = "Week 3",
                     ValueLabel = "100",
-                    Color = SKColor.Parse("#90D585")
+                    Color = Color.Parse("#90D585")
                 },
                 new ChartEntry(600)
                 {
                     Label = "Week 4",
                     ValueLabel = "600",
-                    Color = SKColor.Parse("#32a852")
+                    Color = Color.Parse("#32a852")
                 },
                 new ChartEntry(600)
                 {
                     Label = "Week 5",
                     ValueLabel = "1600",
-                    Color = SKColor.Parse("#8EC0D8")
+                    Color = Color.Parse("#8EC0D8")
                 }
             };
 
             return new Chart[]
             {
-                new LegacyBarChart
+                new BarChart
                 {
                     Entries = entries,
                     LabelTextSize = 16,
                     LabelOrientation = Orientation.Horizontal,
                     Margin = 10
                 },
-                new LegacyPointChart
+                new PointChart
                 {
                     Entries = entries,
                     LabelTextSize = 16,
                     LabelOrientation = Orientation.Horizontal,
                     Margin = 10
                 },
-                new LegacyLineChart
+                new LineChart
                 {
                     Entries = entries,
                     LabelTextSize = 16,

@@ -13,9 +13,6 @@
     <TrimMode>full</TrimMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views" Version="3.119.4" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="../Microcharts.Droid/Microcharts.Droid.csproj" />
     <ProjectReference Include="../Microcharts.Samples/Microcharts.Samples.csproj" />
     <ProjectReference Include="../Microcharts/Microcharts.csproj" />

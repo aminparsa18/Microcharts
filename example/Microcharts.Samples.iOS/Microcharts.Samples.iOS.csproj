@@ -15,9 +15,9 @@
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Microcharts.iOS/Microcharts.iOS.csproj" />
+    <ProjectReference Include="../../src/Microcharts.iOS/Microcharts.iOS.csproj" />
     <ProjectReference Include="../Microcharts.Samples/Microcharts.Samples.csproj" />
-    <ProjectReference Include="../Microcharts/Microcharts.csproj" />
+    <ProjectReference Include="../../src/Microcharts/Microcharts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties/" />

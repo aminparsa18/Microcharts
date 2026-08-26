@@ -40,19 +40,19 @@ jobs:
           xcode-version: latest-stable
 
       - name: "Build solution"
-        run: dotnet build Sources/Microcharts.slnx --configuration Release
+        run: dotnet build Microcharts.slnx --configuration Release
 
       - name: "Pack Microcharts Core"
-        run: dotnet pack Sources/Microcharts/Microcharts.csproj --configuration Release --no-build
+        run: dotnet pack src/Microcharts/Microcharts.csproj --configuration Release --no-build
 
       - name: "Pack Microcharts Droid"
-        run: dotnet pack Sources/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release --no-build
+        run: dotnet pack src/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release --no-build
 
       - name: "Pack Microcharts iOS"
-        run: dotnet pack Sources/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release --no-build
+        run: dotnet pack src/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release --no-build
 
       - name: "Pack Microcharts MAUI"
-        run: dotnet pack Sources/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release --no-build
+        run: dotnet pack src/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release --no-build
 
       - name: "Pack Microcharts Meta-package"
-        run: dotnet pack Sources/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release
+        run: dotnet pack src/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release

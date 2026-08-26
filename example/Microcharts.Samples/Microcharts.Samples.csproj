@@ -4,6 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.20" />
-    <ProjectReference Include="..\Microcharts\Microcharts.csproj" />
+    <ProjectReference Include="..\..\src\Microcharts\Microcharts.csproj" />
   </ItemGroup>
 </Project>

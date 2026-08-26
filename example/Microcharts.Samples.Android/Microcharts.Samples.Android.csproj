@@ -13,8 +13,8 @@
     <TrimMode>full</TrimMode>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Microcharts.Droid/Microcharts.Droid.csproj" />
+    <ProjectReference Include="../../src/Microcharts.Droid/Microcharts.Droid.csproj" />
     <ProjectReference Include="../Microcharts.Samples/Microcharts.Samples.csproj" />
-    <ProjectReference Include="../Microcharts/Microcharts.csproj" />
+    <ProjectReference Include="../../src/Microcharts/Microcharts.csproj" />
   </ItemGroup>
 </Project>

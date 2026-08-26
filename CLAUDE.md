@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build the full solution (preferred)
-dotnet build Sources/Microcharts.slnx --configuration Release
+dotnet build Microcharts.slnx --configuration Release
 
 # Pack all NuGet packages (macOS/Linux)
 ./buildpackages-maui.sh
@@ -15,11 +15,11 @@ dotnet build Sources/Microcharts.slnx --configuration Release
 ./clean.sh
 
 # Pack individual packages
-dotnet pack Sources/Microcharts/Microcharts.csproj --configuration Release
-dotnet pack Sources/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release
-dotnet pack Sources/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release
-dotnet pack Sources/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release
-dotnet pack Sources/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release
+dotnet pack src/Microcharts/Microcharts.csproj --configuration Release
+dotnet pack src/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release
+dotnet pack src/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release
+dotnet pack src/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release
+dotnet pack src/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release
 ```
 
 Required .NET workloads: `android`, `ios`, `maccatalyst`, `maui`.
@@ -44,7 +44,7 @@ The `Microcharts` meta-package aggregates all platform packages via a `.nuspec` 
 
 ### Chart Class Hierarchy
 
-All charts inherit from `Chart` (abstract base in `Sources/Microcharts/Charts/Chart.cs`):
+All charts inherit from `Chart` (abstract base in `src/Microcharts/Charts/Chart.cs`):
 
 - **Chart** - Provides `Draw(SKCanvas, width, height)`, animation, property change notification, and the `Invalidated` event that platform views subscribe to for re-rendering.
   - **SimpleChart** - Single-series charts: `PieChart`, `DonutChart`, `RadialGaugeChart`, `HalfRadialGaugeChart`, `RadarChart`
@@ -70,7 +70,7 @@ Each platform project contains a single `ChartView` class that extends `SKCanvas
 
 ## Versioning and Packaging
 
-Version is managed centrally in `Sources/Directory.Build.props` (`VersionMain` property). All package output goes to the `/artifacts` directory. The publish.yml workflow appends the GitHub run number as a prerelease suffix.
+Version is managed centrally in `src/Directory.Build.props` (`VersionMain` property). All package output goes to the `/artifacts` directory. The publish.yml workflow appends the GitHub run number as a prerelease suffix.
 
 ## CI/CD
 

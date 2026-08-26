@@ -3,7 +3,7 @@
 
 namespace Microcharts
 {
-    using SkiaSharp;
+    using Microsoft.Maui.Graphics;
 
     /// <summary>
     /// A data entry for a chart.
@@ -47,25 +47,30 @@ namespace Microcharts
         /// Gets or sets the color of the fill.
         /// </summary>
         /// <value>The color of the fill.</value>
-        public SKColor Color { get; set; } = SKColors.Black;
+        public Color Color { get; set; } = Colors.Black;
 
         /// <summary>
-        /// Gets or sets the color of the rest part
+        /// Gets or sets the color of the rest part. <c>null</c> means unset (no "rest" color drawn).
         /// </summary>
         /// <value>The color of the rest part.</value>
-        public SKColor OtherColor { get; set; } = SKColor.Empty;
+        /// <remarks>
+        /// Was a non-nullable <c>SKColor</c> compared against the <c>SKColor.Empty</c> sentinel to mean "unset";
+        /// Microsoft.Maui.Graphics' <see cref="Color"/> has no equivalent empty sentinel, so this is now a
+        /// nullable <see cref="Color"/> with <c>null</c> meaning unset.
+        /// </remarks>
+        public Color OtherColor { get; set; }
 
         /// <summary>
         /// Gets or sets the color of the text (for the caption label).
         /// </summary>
         /// <value>The color of the text.</value>
-        public SKColor TextColor { get; set; } = SKColors.Gray;
+        public Color TextColor { get; set; } = Colors.Gray;
 
         /// <summary>
         /// Gets or sets the color of the value label
         /// </summary>
         /// <value>The color of the value label.</value>
-        public SKColor ValueLabelColor { get; set; } = SKColors.Black;
+        public Color ValueLabelColor { get; set; } = Colors.Black;
 
         #endregion
     }

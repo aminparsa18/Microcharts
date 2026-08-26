@@ -9,7 +9,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using SkiaSharp;
+using Microcharts.Abstracts;
+using Microsoft.Maui.Graphics;
 
 namespace Microcharts
 {
@@ -27,11 +28,13 @@ namespace Microcharts
 
         private float animationProgress, margin = 20, labelTextSize = 16;
 
-        private SKColor backgroundColor = SKColors.White;
+        private Color backgroundColor = Colors.White;
 
-        private SKColor labelColor = SKColors.Gray;
+        private Color labelColor = Colors.Gray;
 
-        private SKTypeface typeface;
+        private IFont typeface;
+
+        private ITextMetricsProvider textMetricsProvider = new PortableTextMetricsProvider();
 
         private float? internalMinValue, internalMaxValue;
 
@@ -158,17 +161,29 @@ namespace Microcharts
         /// <summary>
         /// Typeface for labels
         /// </summary>
-        public SKTypeface Typeface
+        public IFont Typeface
         {
             get => typeface;
             set => Set(ref typeface, value);
         }
 
         /// <summary>
+        /// Gets or sets the text-metrics provider used to measure label/legend/axis text (ink bounds and font
+        /// ascent/descent). Defaults to <see cref="PortableTextMetricsProvider"/>; the native
+        /// <c>Microcharts.iOS</c>/<c>Microcharts.Droid</c> packages inject a platform-precise implementation.
+        /// </summary>
+        /// <value>The text-metrics provider.</value>
+        public ITextMetricsProvider TextMetricsProvider
+        {
+            get => textMetricsProvider;
+            set => Set(ref textMetricsProvider, value ?? new PortableTextMetricsProvider());
+        }
+
+        /// <summary>
         /// Gets or sets the color of the chart background.
         /// </summary>
         /// <value>The color of the background.</value>
-        public SKColor BackgroundColor
+        public Color BackgroundColor
         {
             get => backgroundColor;
             set => Set(ref backgroundColor, value);
@@ -178,7 +193,7 @@ namespace Microcharts
         /// Gets or sets the color of the labels.
         /// </summary>
         /// <value>The color of the labels.</value>
-        public SKColor LabelColor
+        public Color LabelColor
         {
             get => labelColor;
             set => Set(ref labelColor, value);
@@ -281,45 +296,41 @@ namespace Microcharts
         /// Gets the drawable chart area (is set <see cref="DrawCaptionElements"/>).
         /// This is the total chart size minus the area allocated by caption elements.
         /// </summary>
-        protected SKRect DrawableChartArea { get; private set; }
+        protected RectF DrawableChartArea { get; private set; }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Draw the  graph onto the specified canvas.
+        /// Draw the graph onto the specified canvas.
         /// </summary>
         /// <param name="canvas">The canvas.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public void Draw(SKCanvas canvas, int width, int height)
+        /// <param name="dirtyRect">The area to draw into.</param>
+        public void Draw(ICanvas canvas, RectF dirtyRect)
         {
-            DrawableChartArea = new SKRect(0, 0, width, height);
+            DrawableChartArea = dirtyRect;
 
             // Clear just the drawing area to avoid messing up rest of the canvas in case it's shared.
-            // Use Src blend so a transparent BackgroundColor actually replaces (clears) the previous
-            // frame rather than blending over it, which otherwise leaves stale content behind.
-            using (var paint = new SKPaint
-            {
-                Style = SKPaintStyle.Fill,
-                Color = BackgroundColor,
-                BlendMode = SKBlendMode.Src
-            })
-            {
-                canvas.DrawRect(DrawableChartArea, paint);
-            }
+            // Use Copy blend so a transparent BackgroundColor actually replaces (clears) the previous
+            // frame rather than blending over it, which otherwise leaves stale content behind. This is the
+            // same bleed-through bug class the SkiaSharp path had to fix (SKBlendMode.Src there); verify it
+            // per-platform here too -- Maui.Graphics' platform canvases aren't guaranteed to behave identically.
+            canvas.SaveState();
+            canvas.BlendMode = BlendMode.Copy;
+            canvas.FillColor = BackgroundColor;
+            canvas.FillRectangle(DrawableChartArea);
+            canvas.RestoreState();
 
-            DrawContent(canvas, width, height);
+            DrawContent(canvas, dirtyRect);
         }
 
         /// <summary>
         /// Draws the chart content.
         /// </summary>
         /// <param name="canvas">The canvas.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public abstract void DrawContent(SKCanvas canvas, int width, int height);
+        /// <param name="dirtyRect">The area to draw into.</param>
+        public abstract void DrawContent(ICanvas canvas, RectF dirtyRect);
 
         /// <summary>
         /// Draws caption elements on the right or left side of the chart.
@@ -330,7 +341,7 @@ namespace Microcharts
         /// <param name="entries">The entries.</param>
         /// <param name="isLeft">If set to <c>true</c> is left.</param>
         /// <param name="isGraphCentered">Should the chart in the center always?</param>
-        protected void DrawCaptionElements(SKCanvas canvas, int width, int height, List<ChartEntry> entries,
+        protected void DrawCaptionElements(ICanvas canvas, int width, int height, List<ChartEntry> entries,
             bool isLeft, bool isGraphCentered)
         {
             var totalMargin = 2 * Margin;
@@ -354,20 +365,13 @@ namespace Microcharts
                 {
                     var captionMargin = LabelTextSize * 0.60f;
                     var captionX = isLeft ? Margin : width - Margin - LabelTextSize;
-                    var legendColor = entry.Color.WithAlpha((byte)(entry.Color.Alpha * AnimationProgress));
-                    var valueColor =
-                        entry.ValueLabelColor.WithAlpha((byte)(entry.ValueLabelColor.Alpha * AnimationProgress));
-                    var lblColor = entry.TextColor.WithAlpha((byte)(entry.TextColor.Alpha * AnimationProgress));
-                    var rect = SKRect.Create(captionX, y, LabelTextSize, LabelTextSize);
+                    var legendColor = entry.Color.MultiplyAlpha(AnimationProgress);
+                    var valueColor = entry.ValueLabelColor.MultiplyAlpha(AnimationProgress);
+                    var lblColor = entry.TextColor.MultiplyAlpha(AnimationProgress);
+                    var rect = new RectF(captionX, y, LabelTextSize, LabelTextSize);
 
-                    using (var paint = new SKPaint
-                    {
-                        Style = SKPaintStyle.Fill,
-                        Color = legendColor
-                    })
-                    {
-                        canvas.DrawRect(rect, paint);
-                    }
+                    canvas.FillColor = legendColor;
+                    canvas.FillRectangle(rect);
 
                     if (isLeft)
                     {
@@ -378,42 +382,36 @@ namespace Microcharts
                         captionX -= captionMargin;
                     }
 
-                    canvas.DrawCaptionLabels(entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize,
-                        new SKPoint(captionX, y + (LabelTextSize / 2)), isLeft ? SKTextAlign.Left : SKTextAlign.Right,
+                    canvas.DrawCaptionLabels(TextMetricsProvider, entry.Label, lblColor, entry.ValueLabel, valueColor, LabelTextSize,
+                        new PointF(captionX, y + (LabelTextSize / 2)), isLeft ? HorizontalAlignment.Left : HorizontalAlignment.Right,
                         Typeface, out var labelBounds);
-                    labelBounds.Union(rect);
+                    labelBounds = labelBounds.Union(rect);
 
                     if (DrawDebugRectangles)
                     {
-                        using (var paint = new SKPaint
-                        {
-                            Style = SKPaintStyle.Fill,
-                            Color = entry.Color,
-                            IsStroke = true
-                        })
-                        {
-                            canvas.DrawRect(labelBounds, paint);
-                        }
+                        canvas.StrokeColor = entry.Color;
+                        canvas.StrokeSize = 1;
+                        canvas.DrawRectangle(labelBounds);
                     }
 
                     if (isLeft)
                     {
-                        DrawableChartArea = new SKRect(Math.Max(DrawableChartArea.Left, labelBounds.Right), 0,
-                            DrawableChartArea.Right, DrawableChartArea.Bottom);
+                        DrawableChartArea = new RectF(Math.Max(DrawableChartArea.Left, labelBounds.Right), 0,
+                            DrawableChartArea.Right - Math.Max(DrawableChartArea.Left, labelBounds.Right), DrawableChartArea.Bottom);
                     }
                     else
                     {
                         // Draws the chart centered for right labelmode only
                         var left = isGraphCentered == true ? Math.Abs(width - DrawableChartArea.Right) : 0;
-                        DrawableChartArea = new SKRect(left, 0, Math.Min(DrawableChartArea.Right, labelBounds.Left),
-                            DrawableChartArea.Bottom);
+                        var right = Math.Min(DrawableChartArea.Right, labelBounds.Left);
+                        DrawableChartArea = new RectF(left, 0, right - left, DrawableChartArea.Bottom);
                     }
 
                     if (entries.Count == 0 && isGraphCentered)
                     {
                         // Draws the chart centered if there isn't any left values
-                        DrawableChartArea = new SKRect(Math.Abs(width - DrawableChartArea.Right), 0,
-                            DrawableChartArea.Right, DrawableChartArea.Bottom);
+                        var newLeft = Math.Abs(width - DrawableChartArea.Right);
+                        DrawableChartArea = new RectF(newLeft, 0, DrawableChartArea.Right - newLeft, DrawableChartArea.Bottom);
                     }
                 }
             }

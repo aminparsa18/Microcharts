@@ -1,37 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
-using SkiaSharp;
+using Microcharts.Abstracts;
+using Microsoft.Maui.Graphics;
+// Both Microsoft.Maui and Microsoft.Maui.Graphics (implicit global usings under UseMaui=true) declare a
+// "Font" type; alias to the one this file means.
+using Font = Microsoft.Maui.Graphics.Font;
 
 namespace Microcharts
 {
     internal static class MeasureHelper
     {
         /// <summary>
-        /// Measures the text values.
+        /// Measures the ink bounds of the text values.
         /// </summary>
         /// <returns>The texts bounds.</returns>
-        internal static SKRect[] MeasureTexts(string[] texts, float textSize)
+        internal static RectF[] MeasureTexts(ICanvas canvas, ITextMetricsProvider textMetrics, string[] texts, float textSize, IFont font = null)
         {
-            using var font = new SKFont(SKTypeface.Default, textSize);
-            return MeasureTexts(texts, font);
-        }
-
-        /// <summary>
-        /// Measures the text values.
-        /// </summary>
-        /// <returns>The texts bounds.</returns>
-        internal static SKRect[] MeasureTexts(string[] texts, SKFont font)
-        {
-            return texts.Select(text =>
-            {
-                if (string.IsNullOrEmpty(text))
-                {
-                    return SKRect.Empty;
-                }
-
-                font.MeasureText(text, out var bounds);
-                return bounds;
-            }).ToArray();
+            font ??= Font.Default;
+            return texts.Select(text => string.IsNullOrEmpty(text)
+                ? RectF.Zero
+                : textMetrics.MeasureInkBounds(canvas, text, font, textSize)).ToArray();
         }
 
         /// <summary>
@@ -42,7 +30,7 @@ namespace Microcharts
         /// <param name="textSize">the text size</param>
         /// <param name="textSizes">text sizes</param>
         /// <param name="orientation">orientation of content</param>
-        internal static float CalculateFooterHeaderHeight(float margin, float textSize, SKRect[] textSizes, Orientation orientation)
+        internal static float CalculateFooterHeaderHeight(float margin, float textSize, RectF[] textSizes, Orientation orientation)
         {
             var result = margin;
             if (textSizes.Any(l => !l.IsEmpty))
@@ -64,7 +52,7 @@ namespace Microcharts
             return result;
         }
 
-        internal static int CalculateYAxis(bool showYAxisText, bool showYAxisLines, IEnumerable<ChartEntry> entries, int yAxisMaxTicks, SKPaint yAxisTextPaint, SKFont yAxisTextFont, Position yAxisPosition, int width, bool fixedRange, ref float maxValue, ref float minValue, out float yAxisXShift, out List<float> yAxisIntervalLabels)
+        internal static int CalculateYAxis(bool showYAxisText, bool showYAxisLines, IEnumerable<ChartEntry> entries, int yAxisMaxTicks, ICanvas canvas, ITextMetricsProvider textMetrics, IFont yAxisTextFont, float yAxisTextSize, Position yAxisPosition, int width, bool fixedRange, ref float maxValue, ref float minValue, out float yAxisXShift, out List<float> yAxisIntervalLabels)
         {
             yAxisXShift = 0.0f;
             yAxisIntervalLabels = new List<float>();
@@ -104,7 +92,7 @@ namespace Microcharts
                     .ToList();
 
                 var longestYAxisLabel = yAxisIntervalLabels.Aggregate(string.Empty, (max, cur) => max.Length > cur.ToString().Length ? max : cur.ToString());
-                var longestYAxisLabelWidth = MeasureTexts([longestYAxisLabel], yAxisTextFont).Select(b => b.Width).FirstOrDefault();
+                var longestYAxisLabelWidth = MeasureTexts(canvas, textMetrics, new[] { longestYAxisLabel }, yAxisTextSize, yAxisTextFont).Select(b => b.Width).FirstOrDefault();
                 yAxisWidth = (int)(width - longestYAxisLabelWidth) - 10;
                 if (yAxisPosition == Position.Left)
                 {
@@ -120,12 +108,12 @@ namespace Microcharts
             return width;
         }
 
-        internal static SKPoint CalculatePoint(float margin, float animationProgress, float maxValue, float valueRange, float value, int i, SKSize itemSize, float origin, float headerHeight, float originX = 0)
+        internal static PointF CalculatePoint(float margin, float animationProgress, float maxValue, float valueRange, float value, int i, SizeF itemSize, float origin, float headerHeight, float originX = 0)
         {
             var x = originX + margin + (itemSize.Width / 2) + (i * (itemSize.Width + margin));
             var y = headerHeight + ((1 - animationProgress) * (origin - headerHeight) + (((maxValue - value) / valueRange) * itemSize.Height) * animationProgress);
 
-            return new SKPoint(x, y);
+            return new PointF(x, y);
         }
     }
 }

@@ -1,4 +1,4 @@
-name: Microcharts PR Build
+name: Plugin.Maui.Microchart PR Build
 on:
   - pull_request
   - workflow_dispatch
@@ -40,19 +40,19 @@ jobs:
           xcode-version: latest-stable
 
       - name: "Build solution"
-        run: dotnet build Microcharts.slnx --configuration Release
+        run: dotnet build Plugin.Maui.Microchart.slnx --configuration Release
 
-      - name: "Pack Microcharts Core"
-        run: dotnet pack src/Microcharts/Microcharts.csproj --configuration Release --no-build
+      - name: "Pack Plugin.Maui.Microchart Core"
+        run: dotnet pack src/Plugin.Maui.Microchart.Core/Plugin.Maui.Microchart.Core.csproj --configuration Release --no-build
 
-      - name: "Pack Microcharts Droid"
-        run: dotnet pack src/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release --no-build
+      - name: "Pack Plugin.Maui.Microchart Droid"
+        run: dotnet pack src/Plugin.Maui.Microchart.Droid/Plugin.Maui.Microchart.Droid.csproj --configuration Release --no-build
 
-      - name: "Pack Microcharts iOS"
-        run: dotnet pack src/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release --no-build
+      - name: "Pack Plugin.Maui.Microchart iOS"
+        run: dotnet pack src/Plugin.Maui.Microchart.iOS/Plugin.Maui.Microchart.iOS.csproj --configuration Release --no-build
 
-      - name: "Pack Microcharts MAUI"
-        run: dotnet pack src/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release --no-build
+      - name: "Pack Plugin.Maui.Microchart MAUI"
+        run: dotnet pack src/Plugin.Maui.Microchart/Plugin.Maui.Microchart.csproj --configuration Release --no-build
 
-      - name: "Pack Microcharts Meta-package"
-        run: dotnet pack src/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release
+      - name: "Pack Plugin.Maui.Microchart Meta-package"
+        run: dotnet pack src/Plugin.Maui.Microchart.Metapackage/Plugin.Maui.Microchart.Metapackage.csproj --configuration Release

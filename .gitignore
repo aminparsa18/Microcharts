@@ -97,11 +97,8 @@ paket-files/
 
 
 # this file can be merge conflict hell, never commit these.
-Sources/Microcharts.Droid/Resources/Resource.designer.cs
-Sources/Microcharts.Samples.Droid/Resources/Resource.designer.cs
-/Sources/.vsconfig
-/Sources/NuGet.config
-/Sources/Microcharts.Samples.Android/Resources/Resource.designer.cs
+src/Plugin.Maui.Microchart.Droid/Resources/Resource.designer.cs
+example/Plugin.Maui.Microchart.Samples.Android/Resources/Resource.designer.cs
 
 # Exclude built NuGet packages
 artifacts/

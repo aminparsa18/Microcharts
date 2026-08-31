@@ -21,7 +21,7 @@ if [[ -z "${1:-}" ]]; then
 fi
 
 SERIAL="$1"
-PROJECT="example/Microcharts.Samples.Maui/Microcharts.Samples.Maui.csproj"
+PROJECT="example/Plugin.Maui.Microchart.Samples.Maui/Plugin.Maui.Microchart.Samples.Maui.csproj"
 
 if ! adb devices | grep -q "^${SERIAL}[[:space:]]*device$"; then
     echo "Error: device $SERIAL not connected (check 'adb devices')." >&2

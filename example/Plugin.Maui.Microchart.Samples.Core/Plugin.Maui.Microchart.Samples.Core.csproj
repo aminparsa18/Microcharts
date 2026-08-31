@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Graphics" Version="10.0.20" />
+    <ProjectReference Include="..\..\src\Plugin.Maui.Microchart.Core\Plugin.Maui.Microchart.Core.csproj" />
+  </ItemGroup>
+</Project>

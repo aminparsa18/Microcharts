@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build the full solution (preferred)
-dotnet build Microcharts.slnx --configuration Release
+dotnet build Plugin.Maui.Microchart.slnx --configuration Release
 
 # Pack all NuGet packages (macOS/Linux)
 ./buildpackages-maui.sh
@@ -15,11 +15,11 @@ dotnet build Microcharts.slnx --configuration Release
 ./clean.sh
 
 # Pack individual packages
-dotnet pack src/Microcharts/Microcharts.csproj --configuration Release
-dotnet pack src/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release
-dotnet pack src/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release
-dotnet pack src/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release
-dotnet pack src/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release
+dotnet pack src/Plugin.Maui.Microchart.Core/Plugin.Maui.Microchart.Core.csproj --configuration Release
+dotnet pack src/Plugin.Maui.Microchart/Plugin.Maui.Microchart.csproj --configuration Release
+dotnet pack src/Plugin.Maui.Microchart.Droid/Plugin.Maui.Microchart.Droid.csproj --configuration Release
+dotnet pack src/Plugin.Maui.Microchart.iOS/Plugin.Maui.Microchart.iOS.csproj --configuration Release
+dotnet pack src/Plugin.Maui.Microchart.Metapackage/Plugin.Maui.Microchart.Metapackage.csproj --configuration Release
 ```
 
 Required .NET workloads: `android`, `ios`, `maccatalyst`, `maui`.
@@ -28,25 +28,26 @@ There are no test projects in this repository.
 
 ## Architecture
 
-Microcharts is a cross-platform charting library built on **SkiaSharp 3.x** targeting **.NET 10**. All chart rendering is platform-agnostic SkiaSharp drawing; platform projects provide thin `ChartView` wrappers.
+Plugin.Maui.Microchart is a cross-platform charting library built on **Microsoft.Maui.Graphics** targeting **.NET 10** — no SkiaSharp anywhere in the dependency graph. All chart rendering is platform-agnostic `ICanvas`/`IDrawable` drawing; platform projects provide thin `ChartView` wrappers.
 
 ### Project Dependency Graph
 
 ```
-Microcharts.Core (net10.0, net10.0-ios, net10.0-android, net10.0-maccatalyst, net10.0-windows)
+Plugin.Maui.Microchart.Core (net10.0, net10.0-ios, net10.0-android, net10.0-maccatalyst, net10.0-windows)
   ^           ^            ^
   |           |            |
   Maui      iOS         Droid
-  (ChartView wrappers - each extends SKCanvasView for its platform)
+  (ChartView wrappers: Maui's is a GraphicsView/IDrawable; iOS/Droid are
+   native UIView/View subclasses that draw through Maui.Graphics.Platform.PlatformCanvas)
 ```
 
-The `Microcharts` meta-package aggregates all platform packages via a `.nuspec` file with target-framework-specific dependency groups.
+`Plugin.Maui.Microchart.All` is a convenience umbrella package (Core + MAUI) built from a `.nuspec` file with target-framework-specific dependency groups; most MAUI apps should install `Plugin.Maui.Microchart` directly instead.
 
 ### Chart Class Hierarchy
 
-All charts inherit from `Chart` (abstract base in `src/Microcharts/Charts/Chart.cs`):
+All charts inherit from `Chart` (abstract base in `src/Plugin.Maui.Microchart.Core/Charts/Chart.cs`):
 
-- **Chart** - Provides `Draw(SKCanvas, width, height)`, animation, property change notification, and the `Invalidated` event that platform views subscribe to for re-rendering.
+- **Chart** - Provides `Draw(ICanvas, RectF)`, animation, property change notification, and the `Invalidated` event that platform views subscribe to for re-rendering.
   - **SimpleChart** - Single-series charts: `PieChart`, `DonutChart`, `RadialGaugeChart`, `HalfRadialGaugeChart`, `RadarChart`
   - **SeriesChart** - Multi-series with `ChartSerie` collections
     - **PointChart** - `LineChart`
@@ -55,7 +56,7 @@ All charts inherit from `Chart` (abstract base in `src/Microcharts/Charts/Chart.
 ### Rendering Pipeline
 
 1. Platform `ChartView` subscribes to `Chart.Invalidated` via weak event handler (prevents memory leaks)
-2. On invalidation, view calls platform-specific redraw (`InvalidateSurface()` on MAUI, `SetNeedsDisplayInRect()` on iOS, `Invalidate()` on Android)
+2. On invalidation, view calls platform-specific redraw (`Invalidate()` on MAUI's `GraphicsView`, `SetNeedsDisplayInRect()` on iOS, `PostInvalidate()` on Android)
 3. `Chart.Draw()` fills background, then delegates to `DrawContent()` (abstract, implemented by each chart type)
 4. Charts animate by interpolating `AnimationProgress` from 0 to 1 over `AnimationDuration`
 
@@ -66,7 +67,7 @@ All charts inherit from `Chart` (abstract base in `src/Microcharts/Charts/Chart.
 
 ### Platform Views
 
-Each platform project contains a single `ChartView` class that extends `SKCanvasView` and exposes a `Chart` property. MAUI's version adds `BindableProperty` for XAML binding. MAUI apps must call `UseMicrocharts()` on `MauiAppBuilder`.
+MAUI's `ChartView` is a `GraphicsView` implementing `IDrawable`, with `BindableProperty` for XAML binding. The iOS/Droid `ChartView`s are native `UIView`/`View` subclasses that draw through `Microsoft.Maui.Graphics.Platform.PlatformCanvas` directly against the platform's own canvas. MAUI apps must call `UseMicrocharts()` on `MauiAppBuilder` (currently a no-op passthrough, kept for a consistent startup call site).
 
 ## Versioning and Packaging
 
@@ -75,4 +76,4 @@ Version is managed centrally in `src/Directory.Build.props` (`VersionMain` prope
 ## CI/CD
 
 - **pull-request.yml** - Runs on pull requests (and manual dispatch); builds on `windows-latest` and `macos-26` (with Xcode `latest-stable` via `maxim-lobanov/setup-xcode@v1`)
-- **publish.yml** - Manual trigger (`workflow_dispatch`); always publishes packages to GitHub Packages (`microcharts-dotnet` org), and additionally to nuget.org when the `publish_to_nuget` input is set (OIDC trusted publishing)
+- **publish.yml** - Manual trigger (`workflow_dispatch`); always publishes packages to GitHub Packages (this repo's owner), and additionally to nuget.org when the `publish_to_nuget` input is set (OIDC trusted publishing)

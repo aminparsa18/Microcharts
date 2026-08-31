@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Plugin.Maui.Microchart.Samples.ChartConfigurationPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Plugin.Maui.Microchart.Samples;assembly=Plugin.Maui.Microchart.Samples.Maui"
+             xmlns:samples="clr-namespace:Plugin.Maui.Microchart.Samples.Core;assembly=Plugin.Maui.Microchart.Samples.Core"
+             x:DataType="local:ChartConfigurationPage"
+             x:Name="Page">
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Label Margin="20,0,0,0"
+               FontSize="Title"
+               Text="List of examples"
+               TextColor="Black" />
+        <Label Grid.Row="1"
+               Margin="20,0,0,0"
+               FontSize="Subtitle"
+               TextColor="Gray"
+               Text="Tap on item to see the chart" />
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Items, Source={x:Reference Page}}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout ItemSpacing="10"
+                                   Orientation="Vertical" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="samples:ExampleChartItem">
+                    <Grid Margin="0"
+                          Padding="0">
+                        <Border Margin="10"
+                               Padding="5"
+                               BackgroundColor="White"
+                               Stroke="LightGray">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                            </Border.GestureRecognizers>
+                            <Grid RowDefinitions="Auto, *" ColumnDefinitions="*, Auto" Margin="10,0">
+                                <Label FontSize="Large"
+                                       LineBreakMode="WordWrap"
+                                       Text="{Binding ExampleName}"
+                                       TextColor="Black" />
+                                <Border Grid.Column="1"
+                                       Margin="5,3"
+                                       Padding="10,3"
+                                       BackgroundColor="Red"
+                                       IsVisible="{Binding IsSeries}"
+                                       VerticalOptions="Center">
+                                    <Label FontSize="Small"
+                                           Text="SERIES"
+                                           TextColor="White" />
+                                </Border>
+                                <Border Grid.Column="1"
+                                       Margin="5,3"
+                                       Padding="10,3"
+                                       BackgroundColor="DarkGreen"
+                                       IsVisible="{Binding IsSimple}"
+                                       VerticalOptions="Center">
+                                    <Label FontSize="Small"
+                                           Text="SIMPLE"
+                                           TextColor="White" />
+                                </Border>
+                                <Label FontSize="Medium"
+                                       Grid.Row="1"
+                                       Grid.ColumnSpan="2"
+                                       TextColor="Gray"
+                                       Text="{Binding ExampleTextDescription}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

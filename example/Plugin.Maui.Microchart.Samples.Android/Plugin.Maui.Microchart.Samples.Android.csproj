@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationId>plugin.maui.microchart.samples.android</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <RootNamespace>Plugin.Maui.Microchart.Samples.Android</RootNamespace>
+    <AssemblyName>Plugin.Maui.Microchart.Samples.Android</AssemblyName>
+    <TrimMode>full</TrimMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Plugin.Maui.Microchart.Droid/Plugin.Maui.Microchart.Droid.csproj" />
+    <ProjectReference Include="../Plugin.Maui.Microchart.Samples.Core/Plugin.Maui.Microchart.Samples.Core.csproj" />
+    <ProjectReference Include="../../src/Plugin.Maui.Microchart.Core/Plugin.Maui.Microchart.Core.csproj" />
+  </ItemGroup>
+</Project>

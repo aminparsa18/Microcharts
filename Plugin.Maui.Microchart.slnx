@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/publish.yml" />
+    <File Path=".github/workflows/pull-request.yml" />
+    <File Path="README.md" />
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Nuget.config" />
+  </Folder>
+  <Project Path="src/Plugin.Maui.Microchart.Droid/Plugin.Maui.Microchart.Droid.csproj" />
+  <Project Path="src/Plugin.Maui.Microchart.iOS/Plugin.Maui.Microchart.iOS.csproj" />
+  <Project Path="src/Plugin.Maui.Microchart/Plugin.Maui.Microchart.csproj" />
+  <Project Path="src/Plugin.Maui.Microchart.Metapackage/Plugin.Maui.Microchart.Metapackage.csproj" />
+  <Project Path="example/Plugin.Maui.Microchart.Samples.Android/Plugin.Maui.Microchart.Samples.Android.csproj" />
+  <Project Path="example/Plugin.Maui.Microchart.Samples.iOS/Plugin.Maui.Microchart.Samples.iOS.csproj">
+    <Platform Project="iPhoneSimulator" />
+  </Project>
+  <Project Path="example/Plugin.Maui.Microchart.Samples.Maui/Plugin.Maui.Microchart.Samples.Maui.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="example/Plugin.Maui.Microchart.Samples.Core/Plugin.Maui.Microchart.Samples.Core.csproj" />
+  <Project Path="src/Plugin.Maui.Microchart.Core/Plugin.Maui.Microchart.Core.csproj" />
+</Solution>

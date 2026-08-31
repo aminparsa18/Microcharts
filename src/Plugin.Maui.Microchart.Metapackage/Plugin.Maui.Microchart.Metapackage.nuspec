@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Plugin.Maui.Microchart.All</id>
+    <version>$version$</version>
+    <title>Plugin.Maui.Microchart.All</title>
+    <authors>Amin Parsa</authors>
+    <owners>Amin Parsa</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/aminparsa18/Plugin.Maui.Microchart</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Umbrella package that pulls in Plugin.Maui.Microchart (MAUI ChartView) and Plugin.Maui.Microchart.Core. Most MAUI apps should install Plugin.Maui.Microchart directly instead -- this exists for convenience only.</description>
+    <copyright>Copyright 2017-2026 (c) Amin Parsa. Based on Microcharts by Alois Deniel.</copyright>
+    <tags>maui ios android chart charts graphics dotnet-maui</tags>
+    <icon>assets/Icon.png</icon>
+    <repository type="git" url="https://github.com/aminparsa18/Plugin.Maui.Microchart.git" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Plugin.Maui.Microchart.Core" version="$version$" />
+      </group>
+      <group targetFramework="net10.0-android36.0">
+        <dependency id="Plugin.Maui.Microchart.Core" version="$version$" />
+        <dependency id="Plugin.Maui.Microchart" version="$version$" />
+      </group>
+      <group targetFramework="net10.0-ios19.0">
+        <dependency id="Plugin.Maui.Microchart.Core" version="$version$" />
+        <dependency id="Plugin.Maui.Microchart" version="$version$" />
+      </group>
+      <group targetFramework="net10.0-maccatalyst19.0">
+        <dependency id="Plugin.Maui.Microchart.Core" version="$version$" />
+        <dependency id="Plugin.Maui.Microchart" version="$version$" />
+      </group>
+      <group targetFramework="net10.0-windows10.0.19041.0">
+        <dependency id="Plugin.Maui.Microchart.Core" version="$version$" />
+        <dependency id="Plugin.Maui.Microchart" version="$version$" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="../../assets/Icon.png" target="assets/" />
+    <file src="_._" target="lib/net10.0" />
+    <file src="_._" target="lib/net10.0-android36.0" />
+    <file src="_._" target="lib/net10.0-ios19.0" />
+    <file src="_._" target="lib/net10.0-maccatalyst19.0" />
+    <file src="_._" target="lib/net10.0-windows10.0.19041.0" />
+  </files>
+</package>

@@ -40,27 +40,27 @@ jobs:
         dotnet workload list
 
     - name: "Restore and build solution"
-      run: dotnet build Microcharts.slnx --configuration Release -p:VersionPrelease=.${{ github.run_number }}
+      run: dotnet build Plugin.Maui.Microchart.slnx --configuration Release -p:VersionPrelease=.${{ github.run_number }}
 
-    - name: "Pack Microcharts Core"
-      run: dotnet pack src/Microcharts/Microcharts.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+    - name: "Pack Plugin.Maui.Microchart Core"
+      run: dotnet pack src/Plugin.Maui.Microchart.Core/Plugin.Maui.Microchart.Core.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
 
-    - name: "Pack Microcharts Droid"
-      run: dotnet pack src/Microcharts.Droid/Microcharts.Droid.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+    - name: "Pack Plugin.Maui.Microchart Droid"
+      run: dotnet pack src/Plugin.Maui.Microchart.Droid/Plugin.Maui.Microchart.Droid.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
 
-    - name: "Pack Microcharts iOS"
-      run: dotnet pack src/Microcharts.iOS/Microcharts.iOS.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+    - name: "Pack Plugin.Maui.Microchart iOS"
+      run: dotnet pack src/Plugin.Maui.Microchart.iOS/Plugin.Maui.Microchart.iOS.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
 
-    - name: "Pack Microcharts MAUI"
-      run: dotnet pack src/Microcharts.Maui/Microcharts.Maui.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
+    - name: "Pack Plugin.Maui.Microchart MAUI"
+      run: dotnet pack src/Plugin.Maui.Microchart/Plugin.Maui.Microchart.csproj --configuration Release --no-build -p:VersionPrelease=.${{ github.run_number }}
 
-    - name: "Pack Microcharts Meta-package"
-      run: dotnet pack src/Microcharts.Metapackage/Microcharts.Metapackage.csproj --configuration Release -p:VersionPrelease=.${{ github.run_number }}
+    - name: "Pack Plugin.Maui.Microchart Meta-package"
+      run: dotnet pack src/Plugin.Maui.Microchart.Metapackage/Plugin.Maui.Microchart.Metapackage.csproj --configuration Release -p:VersionPrelease=.${{ github.run_number }}
 
     # Always publish the build to GitHub Packages (prerelease/CI feed).
     - name: Publish packages to GitHub Packages
       run: |
-        dotnet nuget add source --username microcharts-dotnet --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/microcharts-dotnet/index.json"
+        dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
         Get-ChildItem artifacts/*.nupkg | ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --source github }
 
     # Publish to nuget.org only when explicitly requested via the workflow input.
@@ -69,17 +69,10 @@ jobs:
       uses: NuGet/login@v1
       id: login
       with:
-        user: follesoe          # nuget.org username (profile name), not email
+        user: ${{ github.repository_owner }}          # nuget.org username (profile name), not email -- verify this matches your nuget.org profile and OIDC trusted-publisher config before relying on it
 
-    # Only push the package IDs the org owns on nuget.org. Microcharts.iOS and
-    # Microcharts.Droid are excluded because we don't own those IDs there yet; both are
-    # still published to the GitHub Packages feed above. What remains is the MAUI stack -
-    # Microcharts (meta), Microcharts.Maui and Microcharts.Core - a self-contained graph
-    # (the meta-package depends only on Core + Maui + SkiaSharp). Adjust the filter as
-    # ownership changes.
     - name: Publish packages to nuget.org
       if: ${{ inputs.publish_to_nuget }}
       run: |
         Get-ChildItem artifacts/*.nupkg |
-          Where-Object { $_.Name -notlike 'Microcharts.iOS.*' -and $_.Name -notlike 'Microcharts.Droid.*' } |
           ForEach-Object { dotnet nuget push $_.FullName --skip-duplicate --no-symbols --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json }

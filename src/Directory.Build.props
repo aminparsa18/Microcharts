@@ -6,7 +6,7 @@
 
     <PropertyGroup>
         <!-- Change these two values to control the version -->
-        <VersionMain>2.0.0</VersionMain>
+        <VersionMain>3.0.0</VersionMain>
         <VersionPrelease></VersionPrelease>
     </PropertyGroup>
 
@@ -20,13 +20,13 @@
     <PropertyGroup>
         <!-- Common NuGet package metadata -->
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Authors>Microcharts Team</Authors>
-        <Owners>Microcharts Team</Owners>
+        <Authors>Amin Parsa</Authors>
+        <Owners>Amin Parsa</Owners>
         <NeutralLanguage>en</NeutralLanguage>
-        <RepositoryUrl>https://github.com/microcharts-dotnet/Microcharts.git</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/microcharts-dotnet/Microcharts</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/aminparsa18/Plugin.Maui.Microchart.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/aminparsa18/Plugin.Maui.Microchart</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-        <Copyright>Copyright 2017-$([System.DateTime]::Now.ToString(`yyyy`)) &#169; Microcharts Team</Copyright>
+        <Copyright>Copyright 2017-$([System.DateTime]::Now.ToString(`yyyy`)) &#169; Amin Parsa. Based on Microcharts by Aloïs Deniel.</Copyright>
         <PackageVersion>$(VersionMain)$(VersionPrelease)</PackageVersion>
         <PackageOutputPath>$(MSBuildThisFileDirectory)..\artifacts</PackageOutputPath>
         <LicenseFile>$(MSBuildThisFileDirectory)..\LICENSE</LicenseFile>

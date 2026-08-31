@@ -1,4 +1,5 @@
 using Plugin.Maui.Microchart.Droid;
+using Plugin.Maui.Microchart.Samples.Core;
 
 namespace Plugin.Maui.Microchart.Samples.Android
 {

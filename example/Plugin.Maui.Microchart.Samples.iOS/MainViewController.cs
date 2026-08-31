@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CoreGraphics;
 using Plugin.Maui.Microchart.iOS;
+using Plugin.Maui.Microchart.Samples.Core;
 using UIKit;
 
 namespace Plugin.Maui.Microchart.Samples.iOS

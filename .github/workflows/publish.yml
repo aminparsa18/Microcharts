@@ -11,6 +11,7 @@ on:
 
 jobs:
   publish:
+    environment: release      # must match the "Environment" scoping on the nuget.org trusted-publisher policy
     permissions:
       contents: read
       id-token: write          # required for nuget.org OIDC trusted publishing
@@ -69,7 +70,7 @@ jobs:
       uses: NuGet/login@v1
       id: login
       with:
-        user: ${{ github.repository_owner }}          # nuget.org username (profile name), not email -- verify this matches your nuget.org profile and OIDC trusted-publisher config before relying on it
+        user: xracer          # nuget.org username (profile name) -- the account that created the trusted-publisher policy, not the GitHub handle
 
     - name: Publish packages to nuget.org
       if: ${{ inputs.publish_to_nuget }}

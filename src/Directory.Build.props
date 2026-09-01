@@ -6,7 +6,7 @@
 
     <PropertyGroup>
         <!-- Change these two values to control the version -->
-        <VersionMain>3.0.0</VersionMain>
+        <VersionMain>3.0.1</VersionMain>
         <VersionPrelease></VersionPrelease>
     </PropertyGroup>
 

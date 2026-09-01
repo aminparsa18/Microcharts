@@ -62,10 +62,16 @@ namespace Plugin.Maui.Microchart
             var boxLeft = GetBoxLeft(point.X, ink.Width, horizontalAlignment);
             var boxTop = point.Y + yOffset - (boxHeight / 2);
 
+            // Draw into a slightly wider box than the measured ink width (see DrawHelper.TextWidthSafetyMargin
+            // for why), re-anchored at the same point.X so the padding never shifts where the text visually
+            // sits -- GetBoxLeft's math keeps the box's meaningful edge (left/center/right, per
+            // horizontalAlignment) pinned to point.X regardless of the width passed in.
+            var drawWidth = ink.Width + DrawHelper.TextWidthSafetyMargin;
+            var drawBoxLeft = GetBoxLeft(point.X, drawWidth, horizontalAlignment);
             canvas.Font = drawFont;
             canvas.FontSize = textSize;
             canvas.FontColor = color;
-            canvas.DrawString(text, boxLeft, boxTop, ink.Width, boxHeight, horizontalAlignment, VerticalAlignment.Center, TextFlow.OverflowBounds);
+            canvas.DrawString(text, drawBoxLeft, boxTop, drawWidth, boxHeight, horizontalAlignment, VerticalAlignment.Center, TextFlow.OverflowBounds);
 
             return new RectF(boxLeft, boxTop, ink.Width, boxHeight);
         }
@@ -180,13 +186,17 @@ namespace Plugin.Maui.Microchart
             var drawFont = font ?? Font.Default;
             var ink = textMetrics.MeasureInkBounds(canvas, text, drawFont, fontSize);
             var boxHeight = ink.Height > 0 ? ink.Height : fontSize;
-            var boxLeft = GetBoxLeft(x, ink.Width, textAlign);
             var boxTop = y - (boxHeight / 2);
 
+            // See DrawCenteredLine's matching comment: widen the DrawString box beyond the measured ink width
+            // (DrawHelper.TextWidthSafetyMargin) but re-anchor at x with the padded width so the visible text
+            // doesn't shift.
+            var drawWidth = ink.Width + DrawHelper.TextWidthSafetyMargin;
+            var drawBoxLeft = GetBoxLeft(x, drawWidth, textAlign);
             canvas.Font = drawFont;
             canvas.FontSize = fontSize;
             canvas.FontColor = color;
-            canvas.DrawString(text, boxLeft, boxTop, ink.Width, boxHeight, textAlign, VerticalAlignment.Center, TextFlow.OverflowBounds);
+            canvas.DrawString(text, drawBoxLeft, boxTop, drawWidth, boxHeight, textAlign, VerticalAlignment.Center, TextFlow.OverflowBounds);
         }
 
         /// <summary>

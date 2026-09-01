@@ -95,6 +95,29 @@ namespace Plugin.Maui.Microchart
         }
 
         /// <summary>
+        /// Extra width added to the box passed to <c>ICanvas.DrawString</c>'s boxed overload beyond the
+        /// measured ink width, everywhere that overload is used for what's meant to be single-line text.
+        /// Internal (not private) so <see cref="CanvasExtensions"/>'s equivalent call sites share the same
+        /// value instead of duplicating it.
+        /// </summary>
+        /// <remarks>
+        /// Works around a Microsoft.Maui.Graphics issue on Android: its <c>PlatformCanvas.DrawString(x, y,
+        /// width, height, ha, va, textFlow, ...)</c> always lays the text out in a <c>StaticLayout</c>
+        /// constrained to <c>width</c> -- it silently ignores the <c>textFlow</c> argument entirely (confirmed
+        /// against Microsoft.Maui.Graphics' own Android source), so passing <see cref="TextFlow.OverflowBounds"/>
+        /// (as every call site here does) has no effect there. <see cref="PortableTextMetricsProvider"/>'s own
+        /// doc comments already note its ink-bounds width is advance-based and "under-reports true ink-bounds
+        /// width by a small, roughly size-independent amount (~1-3px)" -- for glyph runs with a wide leading
+        /// capital (e.g. "Tue", "Wed"), that shortfall was enough to push the real rendered width past the box,
+        /// and with no space character to break on, StaticLayout hard-wrapped mid-word ("Tu"/"e", "We"/"d")
+        /// instead of drawing (or even overflowing) on one line. This margin only pads the box handed to
+        /// DrawString -- callers keep using the real (unpadded) ink bounds for centering/positioning, so this
+        /// doesn't shift where text is anchored, only gives the wrap constraint enough slack to never trigger
+        /// for what was measured as fitting.
+        /// </remarks>
+        internal const float TextWidthSafetyMargin = 6f;
+
+        /// <summary>
         /// Draws <paramref name="text"/> such that its baseline sits at (<paramref name="x"/>, <paramref name="y"/>)
         /// with left alignment, matching SkiaSharp's <c>SKCanvas.DrawText(text, x, y, SKTextAlign.Left, font, paint)</c>
         /// baseline convention.
@@ -115,7 +138,7 @@ namespace Plugin.Maui.Microchart
             canvas.Font = font;
             canvas.FontSize = textSize;
             canvas.FontColor = color;
-            canvas.DrawString(text, x, y + ink.Top, Math.Max(ink.Width, 0), ink.Height, HorizontalAlignment.Left, VerticalAlignment.Top, TextFlow.OverflowBounds);
+            canvas.DrawString(text, x, y + ink.Top, Math.Max(ink.Width, 0) + TextWidthSafetyMargin, ink.Height, HorizontalAlignment.Left, VerticalAlignment.Top, TextFlow.OverflowBounds);
         }
 
         internal static void DrawYAxis(bool showYAxisText, bool showYAxisLines, Position yAxisPosition, ICanvas canvas, ITextMetricsProvider textMetrics, IFont yAxisTextFont, float yAxisTextSize, Color yAxisTextColor, Color yAxisLinesColor, float yAxisLinesSize, float margin, float animationProgress, float maxValue, float valueRange, int width, float yAxisXShift, List<float> yAxisIntervalLabels, float headerHeight, SizeF itemSize, float origin)
